@@ -1,0 +1,33 @@
+{
+    "name": "incudata-loghy/loghy-php",
+    "description": "Loghy PHP SDK.",
+    "type": "library",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "INCUDATA",
+            "email": "loghy_support@incudata.co.jp"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Loghy\\SDK\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Loghy\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "guzzlehttp/guzzle": "^7.4"
+    },
+    "require-dev": {
+        "pestphp/pest": "^1.21"
+    },
+    "scripts": {
+        "test": [
+            "@php ./vendor/bin/pest --stop-on-failure"
+        ]
+    }
+}
