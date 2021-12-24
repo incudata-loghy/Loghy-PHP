@@ -35,6 +35,14 @@ interface LoghyInterface
     public function putUserId(string $loghyId, string $userId): ?array;
 
     /**
+     * Delete user ID by site from a Loghy ID
+     * 
+     * @param string $loghyId
+     * @return array<string,bool|int|string>|null
+     */
+    public function deleteUserId(string $loghyId): ?array;
+
+    /**
      * Delete user information from a Loghy ID
      * 
      * @param int|string $loghyId
