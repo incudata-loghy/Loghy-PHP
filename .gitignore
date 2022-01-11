@@ -2,3 +2,5 @@ composer.lock
 vendor
 .phpunit.result.cache
 .php-cs-fixer.cache
+docker_tag
+output.log
