@@ -26,8 +26,11 @@
         "pestphp/pest": "^1.21"
     },
     "scripts": {
-        "test": [
-            "@php ./vendor/bin/pest --stop-on-failure"
-        ]
+        "tests": [
+            "@tests:lint",
+            "@tests:pest"
+        ],
+        "tests:pest": "@php ./vendor/bin/pest --stop-on-failure",
+        "tests:lint": "@php ./vendor/bin/php-cs-fixer fix . --using-cache=no"
     }
 }
