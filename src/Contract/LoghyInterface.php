@@ -11,7 +11,7 @@ interface LoghyInterface
 {
     /**
      * Get Loghy ID from a authentication code
-     * 
+     *
      * @param string $code
      * @return array<string,array|bool|int|string>|null
      */
@@ -19,7 +19,7 @@ interface LoghyInterface
 
     /**
      * Get user information from a Loghy ID
-     * 
+     *
      * @param string $loghyId
      * @return array<string,array|bool|int|string>|null
      */
@@ -27,7 +27,7 @@ interface LoghyInterface
 
     /**
      * Set user ID by site to a Loghy ID
-     * 
+     *
      * @param string $loghyId
      * @param string $userId
      * @return array<string,bool|int|string>|null
@@ -36,7 +36,7 @@ interface LoghyInterface
 
     /**
      * Delete user information from a Loghy ID
-     * 
+     *
      * @param int|string $loghyId
      * @return array<string,bool|int|string>|null
      */
@@ -44,7 +44,7 @@ interface LoghyInterface
 
     /**
      * Delete Loghy ID
-     * 
+     *
      * @param int|string $loghyId
      * @return array<string,bool|int|string>|null
      */
@@ -52,14 +52,14 @@ interface LoghyInterface
 
     /**
      * Set Guzzle HTTP client
-     * 
+     *
      * @param \GuzzleHttp\Client $client
      */
     public function setHttpClient(\GuzzleHttp\Client $client): void;
 
     /**
      * Get Guzzle HTTP Client
-     * 
+     *
      * @return \GuzzleHttp\Client
      */
     public function httpClient(): \GuzzleHttp\Client;

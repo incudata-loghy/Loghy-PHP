@@ -1,7 +1,7 @@
 <?php
 
 dataset('loghy_id_response', function () {
-    yield fn() => [
+    yield fn () => [
         'result' => true,
         'data' => [
             'lgid' => 43686,
@@ -13,8 +13,8 @@ dataset('loghy_id_response', function () {
     ];
 });
 
-dataset('ok_response', function() {
-    yield fn() => [
+dataset('ok_response', function () {
+    yield fn () => [
         'result' => true,
     ];
 });
