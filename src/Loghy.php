@@ -71,6 +71,18 @@ class Loghy implements LoghyInterface {
     }
 
     /**
+     * Delete user ID by site from a Loghy ID
+     * 
+     * @param string $loghyId
+     * @return array<string,bool|int|string>|null
+     */
+    public function deleteUserId(
+        string $loghyId
+    ): ?array {
+        return $this->requestApi('lgid2sdel', $loghyId);
+    }
+
+    /**
      * Delete user information from a Loghy ID
      * 
      * @param int|string $loghyId
