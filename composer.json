@@ -23,11 +23,15 @@
         "guzzlehttp/guzzle": "^7.4"
     },
     "require-dev": {
-        "pestphp/pest": "^1.21"
+        "pestphp/pest": "^1.21",
+        "phpstan/phpstan": "^1.3"
     },
     "scripts": {
-        "test": [
-            "@php ./vendor/bin/pest --stop-on-failure"
-        ]
+        "tests": [
+            "@tests:phpstan",
+            "@tests:pest"
+        ],
+        "tests:pest": "@php ./vendor/bin/pest --stop-on-failure",
+        "tests:phpstan": "@php ./vendor/bin/phpstan analyse --ansi --memory-limit 512M"
     }
 }

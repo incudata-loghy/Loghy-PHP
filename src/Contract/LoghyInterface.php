@@ -45,7 +45,7 @@ interface LoghyInterface
     /**
      * Delete user information from a Loghy ID
      * 
-     * @param int|string $loghyId
+     * @param string $loghyId
      * @return array<string,bool|int|string>|null
      */
     public function deleteUserInfo(string $loghyId): ?array;
@@ -53,7 +53,7 @@ interface LoghyInterface
     /**
      * Delete Loghy ID
      * 
-     * @param int|string $loghyId
+     * @param string $loghyId
      * @return array<string,bool|int|string>|null
      */
     public function deleteLoghyId(string $loghyId): ?array;
