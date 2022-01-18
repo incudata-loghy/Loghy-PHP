@@ -72,7 +72,7 @@ class Loghy implements LoghyInterface
 
     /**
      * Delete user ID by site from a Loghy ID
-     * 
+     *
      * @param string $loghyId
      * @return array<string,bool|int|string>|null
      */
@@ -84,7 +84,7 @@ class Loghy implements LoghyInterface
 
     /**
      * Delete user information from a Loghy ID
-     * 
+     *
      * @param string $loghyId
      * @return array<string,bool|int|string>|null
      */
@@ -96,7 +96,7 @@ class Loghy implements LoghyInterface
 
     /**
      * Delete Loghy ID
-     * 
+     *
      * @param string $loghyId
      * @return array<string,bool|int|string>|null
      */
@@ -108,7 +108,7 @@ class Loghy implements LoghyInterface
 
     /**
      * Request API
-     * 
+     *
      * @param string $command
      * @param string $id
      * @param string $mid

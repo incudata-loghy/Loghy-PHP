@@ -36,7 +36,7 @@ interface LoghyInterface
 
     /**
      * Delete user ID by site from a Loghy ID
-     * 
+     *
      * @param string $loghyId
      * @return array<string,bool|int|string>|null
      */
@@ -44,7 +44,7 @@ interface LoghyInterface
 
     /**
      * Delete user information from a Loghy ID
-     * 
+     *
      * @param string $loghyId
      * @return array<string,bool|int|string>|null
      */
@@ -52,7 +52,7 @@ interface LoghyInterface
 
     /**
      * Delete Loghy ID
-     * 
+     *
      * @param string $loghyId
      * @return array<string,bool|int|string>|null
      */
