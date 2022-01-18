@@ -10,14 +10,14 @@ use Loghy\SDK\Contract\LoghyInterface;
 /**
  * Class Loghy.
  */
-class Loghy implements LoghyInterface {
-
+class Loghy implements LoghyInterface
+{
     /**
      * The Guzzle client instance.
      */
     protected ?Client $client;
 
-    function __construct(
+    public function __construct(
         private string $apiKey,
         private string $siteCode
     ) {
@@ -25,7 +25,7 @@ class Loghy implements LoghyInterface {
 
     /**
      * Get Loghy ID from a authentication code
-     * 
+     *
      * @param string $code
      * @return array<string,array|bool|int|string>|null
      */
@@ -46,7 +46,7 @@ class Loghy implements LoghyInterface {
 
     /**
      * Get user information from a Loghy ID
-     * 
+     *
      * @param string $loghyId
      * @return array<string,array|bool|int|string>|null
      */
@@ -58,7 +58,7 @@ class Loghy implements LoghyInterface {
 
     /**
      * Set user ID by site to a Loghy ID
-     * 
+     *
      * @param string $loghyId
      * @param string $userId
      * @return array<string,bool|int|string>|null
@@ -72,7 +72,7 @@ class Loghy implements LoghyInterface {
 
     /**
      * Delete user ID by site from a Loghy ID
-     * 
+     *
      * @param string $loghyId
      * @return array<string,bool|int|string>|null
      */
@@ -84,7 +84,7 @@ class Loghy implements LoghyInterface {
 
     /**
      * Delete user information from a Loghy ID
-     * 
+     *
      * @param string $loghyId
      * @return array<string,bool|int|string>|null
      */
@@ -93,10 +93,10 @@ class Loghy implements LoghyInterface {
     ): ?array {
         return $this->requestApi('lgid2pdel', $loghyId);
     }
-    
+
     /**
      * Delete Loghy ID
-     * 
+     *
      * @param string $loghyId
      * @return array<string,bool|int|string>|null
      */
@@ -108,7 +108,7 @@ class Loghy implements LoghyInterface {
 
     /**
      * Request API
-     * 
+     *
      * @param string $command
      * @param string $id
      * @param string $mid
@@ -148,7 +148,7 @@ class Loghy implements LoghyInterface {
 
     /**
      * Set Guzzle HTTP client
-     * 
+     *
      * @param \GuzzleHttp\Client $client
      */
     public function setHttpClient(
@@ -159,7 +159,7 @@ class Loghy implements LoghyInterface {
 
     /**
      * Get Guzzle HTTP Client
-     * 
+     *
      * @return \GuzzleHttp\Client
      */
     public function httpClient(): Client

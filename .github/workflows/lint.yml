@@ -1,0 +1,19 @@
+name: lint
+
+on: ['push']
+
+jobs:
+  php-cs-fixer:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2.3.4
+    - uses: php-actions/composer@v5
+
+    - name: Run PHP CS Fixer
+      run: composer tests:lint
+
+    - name: Commit and push
+      uses: stefanzweifel/git-auto-commit-action@v4.2.0
+      with:
+        commit_message: pxp-cs-fixer by Github Actions
