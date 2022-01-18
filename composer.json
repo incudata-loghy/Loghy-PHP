@@ -19,18 +19,22 @@
         }
     },
     "require": {
+        "php": "^8.0",
         "guzzlehttp/guzzle": "^7.4",
         "friendsofphp/php-cs-fixer": "^3.4"
     },
     "require-dev": {
-        "pestphp/pest": "^1.21"
+        "pestphp/pest": "^1.21",
+        "phpstan/phpstan": "^1.3"
     },
     "scripts": {
         "tests": [
+            "@tests:phpstan",
             "@tests:lint",
             "@tests:pest"
         ],
-        "tests:pest": "@php ./vendor/bin/pest --stop-on-failure",
-        "tests:lint": "@php ./vendor/bin/php-cs-fixer fix . --using-cache=no"
+        "tests:phpstan": "@php ./vendor/bin/phpstan analyse --ansi --memory-limit 512M",
+        "tests:lint": "@php ./vendor/bin/php-cs-fixer fix . --using-cache=no",
+        "tests:pest": "@php ./vendor/bin/pest --stop-on-failure"
     }
 }

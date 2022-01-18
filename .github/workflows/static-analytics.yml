@@ -1,12 +1,12 @@
-name: CI
+name: static-analytics
 
 on: ['push']
 
 jobs:
-  run-pest:
+  phpstan:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2.3.4
     - uses: php-actions/composer@v5
-    - uses: NWBY/pest-action@v1.2.0
+    - uses: php-actions/phpstan@v3
