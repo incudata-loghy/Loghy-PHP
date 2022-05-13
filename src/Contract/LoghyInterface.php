@@ -62,6 +62,4 @@ interface LoghyInterface
      * @return array<string,bool|int|string>|null
      */
     public function deleteLoghyId(string $loghyId): ?array;
-
-
 }

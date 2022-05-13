@@ -18,14 +18,14 @@ interface User
 
     /**
      * Get the unique identifier for the user issued by Loghy.
-     * 
+     *
      * @return string
      */
     public function getLoghyId(): string;
 
     /**
      * Get the identifier the user issued by the sites.
-     * 
+     *
      * @return string
      */
     public function getUserId(): ?string;
