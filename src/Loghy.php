@@ -17,6 +17,12 @@ class Loghy implements LoghyInterface
      */
     protected ?Client $client;
 
+    /**
+     * The authorization code.
+     */
+    protected ?string $code;
+
+
     public function __construct(
         private string $apiKey,
         private string $siteCode
@@ -153,8 +159,9 @@ class Loghy implements LoghyInterface
      */
     public function setHttpClient(
         Client $client
-    ): void {
+    ): self {
         $this->client = $client;
+        return $this;
     }
 
     /**
@@ -165,5 +172,22 @@ class Loghy implements LoghyInterface
     public function httpClient(): Client
     {
         return $this->client ?? new Client();
+    }
+
+    /**
+     * Set the authorization code.
+     */
+    public function setCode(string $code): static
+    {
+        $this->code = $code;
+        return $this;
+    }
+
+    /**
+     * Get the authorization code.
+     */
+    public function getCode(): ?string
+    {
+        return $this->code;
     }
 }

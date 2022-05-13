@@ -10,6 +10,11 @@ namespace Loghy\SDK\Contract;
 interface LoghyInterface
 {
     /**
+     * Set the authorization code.
+     */
+    public function setCode(string $code): static;
+
+    /**
      * Get Loghy ID from a authentication code
      *
      * @param string $code
@@ -58,17 +63,5 @@ interface LoghyInterface
      */
     public function deleteLoghyId(string $loghyId): ?array;
 
-    /**
-     * Set Guzzle HTTP client
-     *
-     * @param \GuzzleHttp\Client $client
-     */
-    public function setHttpClient(\GuzzleHttp\Client $client): void;
 
-    /**
-     * Get Guzzle HTTP Client
-     *
-     * @return \GuzzleHttp\Client
-     */
-    public function httpClient(): \GuzzleHttp\Client;
 }

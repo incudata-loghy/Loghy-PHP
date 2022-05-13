@@ -6,7 +6,8 @@ beforeEach(function (): void {
     $this->loghy = new Loghy\SDK\Loghy('__apiKey__', '__siteCode__');
 });
 
-test('httpClient() returns the same instance of the GuzzleHttp\Client class that was provided at setHttpClient()', function (): void {
+
+test('httpClient() returns the same instance of the GuzzleHttp\Client class that was provided at setHttpClient()', function () {
     $client = new GuzzleHttp\Client();
     $this->loghy->setHttpClient($client);
 
@@ -15,7 +16,16 @@ test('httpClient() returns the same instance of the GuzzleHttp\Client class that
         ->toEqual($client);
 });
 
-test('getLoghyId() returns an array has LoghyID', function (array $responseData): void {
+
+test('getCode() returns the code that was provided at setCode()', function () {
+    $this->loghy->setCode('__code__');
+
+    expect($this->loghy->getCode())
+        ->toEqual('__code__');
+});
+
+
+test('getLoghyId() returns an array has LoghyID', function (array $responseData) {
     $client = makeGuzzleJsonMockClient($responseData);
     $this->loghy->setHttpClient($client);
 
@@ -24,7 +34,8 @@ test('getLoghyId() returns an array has LoghyID', function (array $responseData)
         ->toEqual($responseData);
 })->with('loghy_id_response');
 
-test('putUserId() returns an array has ok', function (array $responseData): void {
+
+test('putUserId() returns an array has ok', function (array $responseData) {
     $client = makeGuzzleJsonMockClient($responseData);
     $this->loghy->setHttpClient($client);
 
@@ -32,6 +43,7 @@ test('putUserId() returns an array has ok', function (array $responseData): void
         ->toBeArray()
         ->toEqual($responseData);
 })->with('ok_response');
+
 
 function makeGuzzleJsonMockClient(
     array $data
