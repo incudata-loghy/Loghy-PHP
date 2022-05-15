@@ -44,7 +44,8 @@ class Loghy implements LoghyInterface
     public function getLoghyId(
         string $code
     ): ?array {
-        $url = 'https://api001.sns-loghy.jp/api/' . 'loghyid';
+        // $url = 'https://api001.sns-loghy.jp/api/' . 'loghyid';
+        $url = 'http://localhost:8081/api/' . 'loghyid'; // DEBUG
         $data = [ 'code' => $code ];
 
         $response = $this->httpClient()->request('POST', $url, [
