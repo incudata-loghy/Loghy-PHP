@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Loghy\SDK;
+
 use ArrayAccess;
 use Loghy\SDK\Contract\User as ContractUser;
 
