@@ -11,14 +11,14 @@ interface LoghyInterface
 {
     /**
      * Set the authorization code.
-     * 
+     *
      * @return $this
      */
     public function setCode(string $code): static;
 
     /**
      * Get the User instance for the authenticated user.
-     * 
+     *
      * @return \Loghy\SDK\Contract\User
      */
     public function user(): User;
