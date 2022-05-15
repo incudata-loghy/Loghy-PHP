@@ -6,6 +6,7 @@ namespace Loghy\SDK;
 
 use GuzzleHttp\Client;
 use Loghy\SDK\Contract\LoghyInterface;
+use Loghy\SDK\User;
 use Loghy\SDK\Contract\User as ContractUser;
 
 
@@ -223,6 +224,6 @@ class Loghy implements LoghyInterface
         // TODO: get user
 
         // TODO: make user
-        return new User();
+        return new User;
     }
 }
