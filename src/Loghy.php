@@ -21,12 +21,12 @@ class Loghy implements LoghyInterface
     /**
      * The authorization code.
      */
-    protected ?string $code;
+    protected ?string $code = null;
 
     /**
      * The cached user instance.
      */
-    protected ?User $user;
+    protected ?User $user = null;
 
 
     public function __construct(
