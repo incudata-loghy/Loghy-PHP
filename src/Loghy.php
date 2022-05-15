@@ -26,7 +26,7 @@ class Loghy implements LoghyInterface
     /**
      * The cached user instance.
      */
-    protected User $user;
+    protected ?User $user;
 
 
     public function __construct(
