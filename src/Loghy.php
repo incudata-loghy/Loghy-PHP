@@ -7,7 +7,7 @@ namespace Loghy\SDK;
 use GuzzleHttp\Client;
 use Loghy\SDK\Contract\LoghyInterface;
 use Loghy\SDK\Contract\User as ContractUser;
-use User;
+
 
 /**
  * Class Loghy.
@@ -23,6 +23,11 @@ class Loghy implements LoghyInterface
      * The authorization code.
      */
     protected ?string $code;
+
+    /**
+     * The cached user instance.
+     */
+    protected User $user;
 
 
     public function __construct(
