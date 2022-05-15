@@ -223,6 +223,6 @@ class Loghy implements LoghyInterface
         // TODO: get user
 
         // TODO: make user
-        return new User;
+        return new User();
     }
 }
