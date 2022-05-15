@@ -6,7 +6,6 @@ namespace Loghy\SDK;
 
 use GuzzleHttp\Client;
 use Loghy\SDK\Contract\LoghyInterface;
-use Loghy\SDK\User;
 use Loghy\SDK\Contract\User as ContractUser;
 
 /**
