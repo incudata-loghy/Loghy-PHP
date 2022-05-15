@@ -6,6 +6,8 @@ namespace Loghy\SDK;
 
 use GuzzleHttp\Client;
 use Loghy\SDK\Contract\LoghyInterface;
+use Loghy\SDK\Contract\User as ContractUser;
+use User;
 
 /**
  * Class Loghy.
@@ -152,6 +154,10 @@ class Loghy implements LoghyInterface
         return $content;
     }
 
+    /////////////////////////////////////////////////
+    /////////////////////////////////////////////////
+    /////////////////////////////////////////////////
+
     /**
      * Set Guzzle HTTP client
      *
@@ -175,7 +181,7 @@ class Loghy implements LoghyInterface
     }
 
     /**
-     * Set the authorization code.
+     * {@inheritdoc}
      */
     public function setCode(string $code): static
     {
@@ -185,9 +191,33 @@ class Loghy implements LoghyInterface
 
     /**
      * Get the authorization code.
+     * 
+     * @return string|null
      */
     public function getCode(): ?string
     {
         return $this->code;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function user(): ContractUser
+    {
+        if ($this->user) {
+            return $this->user;
+        }
+
+        // TODO: getLoghyId
+        $response = $this->getLoghyId($this->getCode());
+
+        var_dump($response);
+
+
+
+        // TODO: get user
+
+        // TODO: make user
+        return new User;
     }
 }

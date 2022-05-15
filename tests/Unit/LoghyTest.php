@@ -25,6 +25,11 @@ test('getCode() returns the code that was provided at setCode()', function () {
 });
 
 
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+
 test('getLoghyId() returns an array has LoghyID', function (array $responseData) {
     $client = makeGuzzleJsonMockClient($responseData);
     $this->loghy->setHttpClient($client);
