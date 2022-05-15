@@ -191,7 +191,7 @@ class Loghy implements LoghyInterface
 
     /**
      * Get the authorization code.
-     * 
+     *
      * @return string|null
      */
     public function getCode(): ?string
@@ -218,6 +218,6 @@ class Loghy implements LoghyInterface
         // TODO: get user
 
         // TODO: make user
-        return new User;
+        return new User();
     }
 }
