@@ -37,25 +37,47 @@ test('user() throws exception with invalid code', function (array $response) {
     $loghy->setHttpClient($client);
 
     $loghy->setCode('__code__')->user();
-})->throws(InvalidCodeException::class)->with('invalid_code_response');
+})->with('invalid_code_response')->throws(RuntimeException::class);
 
-test('user() throws exception with unexpected response', function (array $response) {
+test('user() throws exception with unsupported response', function (array $response) {
     $loghy = new Loghy\SDK\Loghy(...$this->configuration);
 
     $client = makeGuzzleJsonMockClient($response);
     $loghy->setHttpClient($client);
 
     $loghy->setCode('__code__')->user();
-})->throws(NotExpectedResponseException::class)->with('unexpected_response');
+})->with('unsupported_response')->throws(RuntimeException::class, 'Invalid structure.');
 
-test('user() returns the User instance for the authenticated user', function (array $response) {
+test('user() throws exception without personal_data', function (array $res1) {
     $loghy = new Loghy\SDK\Loghy(...$this->configuration);
 
-    $client = makeGuzzleJsonMockClient($response);
+    $client = makeGuzzleJsonMockClient($res1, ['result' => true, 'data' => []]);
     $loghy->setHttpClient($client);
 
     $user = $loghy->setCode('__code__')->user();
-})->with('loghy_id_response');
+})->with('loghy_id_response')->with('personal_data_response')
+->throws(RuntimeException::class, 'Invalid structure.');
+
+test('user() returns the User instance for the authenticated user', function (array $res1, array $res2) {
+    $loghy = new Loghy\SDK\Loghy(...$this->configuration);
+
+    $client = makeGuzzleJsonMockClient($res1, $res2);
+    $loghy->setHttpClient($client);
+
+    $user = $loghy->setCode('__code__')->user();
+    expect($user)->toBeInstanceOf(\Loghy\SDK\User::class);
+    expect($user->getId())->toEqual('xxxxxxxxxx');
+    expect($user->getType())->toEqual('google');
+    expect($user->getLoghyId())->toEqual('123');
+    expect($user->getUserId())->toEqual('1');
+    expect($user->getName())->toEqual('Taro Yamada');
+    expect($user->getEmail())->toEqual('taro.yamada@example.com');
+    expect($user->getRaw())->toEqual([
+        'sid' => 'xxxxxxxxxx',
+        'name' => 'Taro Yamada',
+        'email' => 'taro.yamada@example.com',
+    ]);
+})->with('loghy_id_response')->with('personal_data_response');
 
 
 ////////////////////////////////////////////////////////////
@@ -74,7 +96,6 @@ test('getLoghyId() returns an array has LoghyID', function (array $responseData)
         ->toEqual($responseData);
 })->with('loghy_id_response');
 
-
 test('putUserId() returns an array has ok', function (array $responseData) {
     $loghy = new Loghy\SDK\Loghy(...$this->configuration);
 
@@ -85,7 +106,6 @@ test('putUserId() returns an array has ok', function (array $responseData) {
         ->toBeArray()
         ->toEqual($responseData);
 })->with('ok_response');
-
 
 function makeGuzzleJsonMockClient(
     array ...$data

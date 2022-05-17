@@ -10,6 +10,7 @@ use Loghy\SDK\Contract\LoghyInterface;
 use Loghy\SDK\Contract\User as ContractUser;
 use Loghy\SDK\Exceptions\InvalidCodeException;
 use Loghy\SDK\Exceptions\NotExpectedResponseException;
+use RuntimeException;
 
 /**
  * Class Loghy.
@@ -214,40 +215,37 @@ class Loghy implements LoghyInterface
         if ($this->user) {
             return $this->user;
         }
+        $this->user ??= new User();
 
-        // TODO: getLoghyId
-        $loghyId = $this->_getLoghyId($this->getCode());
-
-        // TODO: get user
-        $response = $this->_getUserInfo($loghyId);
-
-        // DEBUG
-        var_dump($response);
-
-        // TODO: make user
-        return (new User())->map([
-            'loghyId' => $loghyId
+        $data = $this->_getLoghyId($this->getCode());
+        $this->user->map([
+            'type' => $data['social_login'] ?? null,
+            'loghyId' => isset($data['lgid']) ? (string)$data['lgid'] : null,
+            'userId' => $data['site_id'] ?? null,
         ]);
+
+        $userInfo = $this->_getUserInfo($this->user->getLoghyId());
+        $this->user->map([
+            'id' => $userInfo['sid'] ?? null,
+            'name' => $userInfo['name'] ?? null,
+            'email' => $userInfo['email'] ?? null,
+        ])->setRaw($userInfo);
+
+        return $this->user;
     }
 
     /**
-     * Get Loghy ID from a authentication code.
+     * Get Loghy ID response from a authentication code.
      *
      * @param string $code
-     * @return string
+     * @return array
      *
      * @throws \Loghy\SDK\Exceptions\InvalidCodeException
      * @throws \Loghy\SDK\Exceptions\NotExpectedResponseException
      */
-    public function _getLoghyId(
+    protected function _getLoghyId(
         string $code
-    ): string {
-
-        // TODO: ??
-        // if ($loghyId = $this->user?->getLoghyId()) {
-        //     return $loghyId;
-        // }
-
+    ): array {
         // $url = 'https://api001.sns-loghy.jp/api/' . 'loghyid';
         $url = 'http://localhost:8081/api/' . 'loghyid'; // DEBUG
         $data = [ 'code' => $code ];
@@ -258,52 +256,41 @@ class Loghy implements LoghyInterface
         $body = (string) $response->getBody();
         $content = json_decode($body, true);
 
-        var_dump($content); // DEBUG
-
-        // TODO: cache provider type (`social_login`) ?
-
-        $loghyId = $this->verifyGetLoghyIdResponse($content);
-        return $loghyId;
+        return $this->verifyDataResponse($content);
     }
 
     /**
-     * Verify to get loghy id response.
-     *
-     * @param array $response
-     * @return string
-     *
-     * @throws \Loghy\SDK\Exceptions\InvalidCodeException
-     * @throws \Loghy\SDK\Exceptions\NotExpectedResponseException
-     */
-    protected function verifyGetLoghyIdResponse(array $response): string
-    {
-        if (!($response['result'] ?? false)) {
-            $errorCode = $response['error_code'] ?? null;
-            if ($errorCode === 211) {
-                throw new InvalidCodeException($response['error_message'] ?? '', $errorCode);
-            }
-            throw new NotExpectedResponseException();
-        }
-
-        $data = $response['data'] ?? null;
-        if (!is_array($data)) {
-            throw new NotExpectedResponseException();
-        }
-
-        $loghyId = $data['lgid'] ?? throw new NotExpectedResponseException();
-        return (string)$loghyId;
-    }
-
-        /**
      * Get user information from a Loghy ID
      *
      * @param string $loghyId
      * @return array<string,array|bool|int|string>|null
      */
-    public function _getUserInfo(
+    protected function _getUserInfo(
         string $loghyId
     ): ?array {
-        return $this->_requestApi('lgid2get', $loghyId);
+        $response = $this->_requestApi('lgid2get', $loghyId);
+        $data = $this->verifyDataResponse($response);
+
+        return $data['personal_data'] ?? throw new RuntimeException('Invalid structure.');
+    }
+
+    /**
+     * 
+     */
+    private function verifyDataResponse(array $response): array
+    {
+        if (!isset($response['result']) || !isset($response['data'])) {
+            throw new RuntimeException('Invalid structure.');
+        }
+
+        if ($response['result']) {
+            return $response['data'];
+        }
+
+        throw new RuntimeException(
+            $response['error_message'] ?? '',
+            $response['error_code'] ?? 0
+        );
     }
 
     /**

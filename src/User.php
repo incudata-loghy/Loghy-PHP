@@ -42,7 +42,7 @@ class User implements ContractUser, ArrayAccess
     /**
      * The user's raw attributes.
      */
-    public array $user;
+    public array $user = [];
 
     /**
      * {@inheritdoc}
@@ -89,7 +89,7 @@ class User implements ContractUser, ArrayAccess
      */
     public function getEmail(): ?string
     {
-        return $this->email;
+        return $this->email ?? null;
     }
 
     /**
@@ -97,7 +97,7 @@ class User implements ContractUser, ArrayAccess
      *
      * @return array
      */
-    public function getRaw()
+    public function getRaw(): array
     {
         return $this->user;
     }
