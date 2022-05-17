@@ -236,7 +236,7 @@ class Loghy implements LoghyInterface
      *
      * @param string $code
      * @return string
-     * 
+     *
      * @throws \Loghy\SDK\Exceptions\InvalidCodeException
      * @throws \Loghy\SDK\Exceptions\NotExpectedResponseException
      */
@@ -267,10 +267,10 @@ class Loghy implements LoghyInterface
 
     /**
      * Verify to get loghy id response.
-     * 
+     *
      * @param array $response
      * @return string
-     * 
+     *
      * @throws \Loghy\SDK\Exceptions\InvalidCodeException
      * @throws \Loghy\SDK\Exceptions\NotExpectedResponseException
      */
@@ -281,17 +281,17 @@ class Loghy implements LoghyInterface
             if ($errorCode === 211) {
                 throw new InvalidCodeException($response['error_message'] ?? '', $errorCode);
             }
-            throw new NotExpectedResponseException;
+            throw new NotExpectedResponseException();
         }
 
         $data = $content['data'] ?? null;
         if (!is_array($data)) {
-            throw new NotExpectedResponseException;
+            throw new NotExpectedResponseException();
         }
 
         $loghyId = $data['lgid'] ?? null;
         if (!is_string($loghyId)) {
-            throw new NotExpectedResponseException;
+            throw new NotExpectedResponseException();
         }
 
         return $loghyId;
