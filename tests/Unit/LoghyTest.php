@@ -48,10 +48,14 @@ test('user() throws exception with unexpected response', function (array $respon
     $loghy->setCode('__code__')->user();
 })->throws(NotExpectedResponseException::class)->with('unexpected_response');
 
-test('user() returns the User instance for the authenticated user', function () {
+test('user() returns the User instance for the authenticated user', function (array $response) {
     $loghy = new Loghy\SDK\Loghy(...$this->configuration);
+
+    $client = makeGuzzleJsonMockClient($response);
+    $loghy->setHttpClient($client);
+
     $user = $loghy->setCode('__code__')->user();
-});
+})->with('loghy_id_response');
 
 
 ////////////////////////////////////////////////////////////

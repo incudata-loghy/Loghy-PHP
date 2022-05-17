@@ -288,6 +288,7 @@ class Loghy implements LoghyInterface
             throw new NotExpectedResponseException();
         }
 
-        return $data['lgid'] ?? throw new NotExpectedResponseException();
+        $loghyId = $data['lgid'] ?? throw new NotExpectedResponseException();
+        return (string)$loghyId;
     }
 }
