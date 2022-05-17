@@ -294,7 +294,7 @@ class Loghy implements LoghyInterface
         return (string)$loghyId;
     }
 
-        /**
+    /**
      * Get user information from a Loghy ID
      *
      * @param string $loghyId
