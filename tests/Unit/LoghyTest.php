@@ -92,7 +92,7 @@ function makeGuzzleJsonMockClient(
 ): GuzzleHttp\Client {
     $mock = new GuzzleHttp\Handler\MockHandler(
         array_map(
-            fn($d) => new GuzzleHttp\Psr7\Response(
+            fn ($d) => new GuzzleHttp\Psr7\Response(
                 200,
                 ['Content-Type' => 'application/json; charset=UTF-8'],
                 json_encode($d)
