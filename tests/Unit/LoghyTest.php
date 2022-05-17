@@ -75,34 +75,6 @@ test('user() returns the User instance for the authenticated user', function (ar
     ]);
 })->with('loghy_id_response')->with('personal_data_response');
 
-
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-
-
-test('getLoghyId() returns an array has LoghyID', function (array $responseData) {
-    $loghy = new Loghy\SDK\Loghy(...$this->configuration);
-
-    $client = makeGuzzleJsonMockClient($responseData);
-    $loghy->setHttpClient($client);
-
-    expect($loghy->getLoghyId('__code__'))
-        ->toBeArray()
-        ->toEqual($responseData);
-})->with('loghy_id_response');
-
-test('putUserId() returns an array has ok', function (array $responseData) {
-    $loghy = new Loghy\SDK\Loghy(...$this->configuration);
-
-    $client = makeGuzzleJsonMockClient($responseData);
-    $loghy->setHttpClient($client);
-
-    expect($loghy->putUserId('__loghy_id__', '__user_id__'))
-        ->toBeArray()
-        ->toEqual($responseData);
-})->with('ok_response');
-
 function makeGuzzleJsonMockClient(
     array ...$data
 ): GuzzleHttp\Client {
