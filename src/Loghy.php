@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Loghy\SDK;
 
+use Exception;
 use GuzzleHttp\Client;
 use Loghy\SDK\Contract\LoghyInterface;
 use Loghy\SDK\Contract\User as ContractUser;
+use Loghy\SDK\Exceptions\InvalidCodeException;
+use Loghy\SDK\Exceptions\NotExpectedResponseException;
 
 /**
  * Class Loghy.
@@ -44,8 +47,7 @@ class Loghy implements LoghyInterface
     public function getLoghyId(
         string $code
     ): ?array {
-        // $url = 'https://api001.sns-loghy.jp/api/' . 'loghyid';
-        $url = 'http://localhost:8081/api/' . 'loghyid'; // DEBUG
+        $url = 'https://api001.sns-loghy.jp/api/' . 'loghyid';
         $data = [ 'code' => $code ];
 
         $response = $this->httpClient()->request('POST', $url, [
@@ -214,7 +216,10 @@ class Loghy implements LoghyInterface
         }
 
         // TODO: getLoghyId
-        $response = $this->getLoghyId($this->getCode());
+        $response = $this->_getLoghyId($this->getCode());
+        // TODO: verify loghy id response
+        // TODO: Invalid code exception
+        // TODO: Other Error
 
         var_dump($response);
 
@@ -224,5 +229,71 @@ class Loghy implements LoghyInterface
 
         // TODO: make user
         return new User();
+    }
+
+    /**
+     * Get Loghy ID from a authentication code.
+     *
+     * @param string $code
+     * @return string
+     * 
+     * @throws \Loghy\SDK\Exceptions\InvalidCodeException
+     * @throws \Loghy\SDK\Exceptions\NotExpectedResponseException
+     */
+    public function _getLoghyId(
+        string $code
+    ): string {
+
+        // TODO: ??
+        // if ($loghyId = $this->user?->getLoghyId()) {
+        //     return $loghyId;
+        // }
+
+        // $url = 'https://api001.sns-loghy.jp/api/' . 'loghyid';
+        $url = 'http://localhost:8081/api/' . 'loghyid'; // DEBUG
+        $data = [ 'code' => $code ];
+        $response = $this->httpClient()->request('POST', $url, [
+            'form_params' => $data
+        ]);
+
+        $body = (string) $response->getBody();
+        $content = json_decode($body, true);
+
+        // TODO: cache provider type (`social_login`) ?
+
+        $loghyId = $this->verifyGetLoghyIdResponse($content);
+        return $loghyId;
+    }
+
+    /**
+     * Verify to get loghy id response.
+     * 
+     * @param array $response
+     * @return string
+     * 
+     * @throws \Loghy\SDK\Exceptions\InvalidCodeException
+     * @throws \Loghy\SDK\Exceptions\NotExpectedResponseException
+     */
+    protected function verifyGetLoghyIdResponse(array $response): string
+    {
+        if (!($response['result'] ?? false)) {
+            $errorCode = $response['error_code'] ?? -1;
+            if ($errorCode === 211) {
+                throw new InvalidCodeException($response['error_message'] ?? '', $errorCode);
+            }
+            throw new NotExpectedResponseException;
+        }
+
+        $data = $content['data'] ?? null;
+        if (!is_array($data)) {
+            throw new NotExpectedResponseException;
+        }
+
+        $loghyId = $data['lgid'] ?? null;
+        if (!is_string($loghyId)) {
+            throw new NotExpectedResponseException;
+        }
+
+        return $loghyId;
     }
 }

@@ -3,25 +3,33 @@
 declare(strict_types=1);
 
 beforeEach(function (): void {
-    $this->loghy = new Loghy\SDK\Loghy('__apiKey__', '__siteCode__');
+    $this->configuration = ['__apiKey__', '__siteCode__'];
 });
 
 
 test('httpClient() returns the same instance of the GuzzleHttp\Client class that was provided at setHttpClient()', function () {
-    $client = new GuzzleHttp\Client();
-    $this->loghy->setHttpClient($client);
+    $loghy = new Loghy\SDK\Loghy(...$this->configuration);
 
-    expect($this->loghy->httpClient())
+    $client = new GuzzleHttp\Client();
+    $loghy->setHttpClient($client);
+
+    expect($loghy->httpClient())
         ->toBeInstanceOf(GuzzleHttp\Client::class)
         ->toEqual($client);
 });
 
 
 test('getCode() returns the code that was provided at setCode()', function () {
-    $this->loghy->setCode('__code__');
+    $loghy = new Loghy\SDK\Loghy(...$this->configuration);
+    $loghy->setCode('__code__');
 
-    expect($this->loghy->getCode())
+    expect($loghy->getCode())
         ->toEqual('__code__');
+});
+
+test('user() returns the User instance for the authenticated user', function () {
+    $loghy = new Loghy\SDK\Loghy(...$this->configuration);
+    $user = $loghy->setCode('__code__')->user();
 });
 
 
@@ -31,20 +39,24 @@ test('getCode() returns the code that was provided at setCode()', function () {
 
 
 test('getLoghyId() returns an array has LoghyID', function (array $responseData) {
-    $client = makeGuzzleJsonMockClient($responseData);
-    $this->loghy->setHttpClient($client);
+    $loghy = new Loghy\SDK\Loghy(...$this->configuration);
 
-    expect($this->loghy->getLoghyId('__code__'))
+    $client = makeGuzzleJsonMockClient($responseData);
+    $loghy->setHttpClient($client);
+
+    expect($loghy->getLoghyId('__code__'))
         ->toBeArray()
         ->toEqual($responseData);
 })->with('loghy_id_response');
 
 
 test('putUserId() returns an array has ok', function (array $responseData) {
-    $client = makeGuzzleJsonMockClient($responseData);
-    $this->loghy->setHttpClient($client);
+    $loghy = new Loghy\SDK\Loghy(...$this->configuration);
 
-    expect($this->loghy->putUserId('__loghy_id__', '__user_id__'))
+    $client = makeGuzzleJsonMockClient($responseData);
+    $loghy->setHttpClient($client);
+
+    expect($loghy->putUserId('__loghy_id__', '__user_id__'))
         ->toBeArray()
         ->toEqual($responseData);
 })->with('ok_response');

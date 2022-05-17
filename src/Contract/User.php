@@ -17,6 +17,11 @@ interface User
     public function getId(): string;
 
     /**
+     * Get the type of social provider.
+     */
+    public function getType(): string;
+
+    /**
      * Get the unique identifier for the user issued by Loghy.
      *
      * @return string

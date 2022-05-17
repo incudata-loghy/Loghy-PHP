@@ -15,6 +15,11 @@ class User implements ContractUser, ArrayAccess
     public string $id;
 
     /**
+     * The type of social provider.
+     */
+    public string $type;
+
+    /**
      * The unique identifier for the user issued by Loghy.
      */
     public string $loghyId;
@@ -45,6 +50,14 @@ class User implements ContractUser, ArrayAccess
     public function getId(): string
     {
         return $this->id;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getType(): string
+    {
+        return $this->type;
     }
 
     /**
