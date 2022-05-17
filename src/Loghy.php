@@ -216,16 +216,18 @@ class Loghy implements LoghyInterface
         }
 
         // TODO: getLoghyId
-        $response = $this->_getLoghyId($this->getCode());
-        // TODO: verify loghy id response
-        // TODO: Invalid code exception
-        // TODO: Other Error
-
+        $loghyId = $this->_getLoghyId($this->getCode());
 
         // TODO: get user
+        $response = $this->_getUserInfo($loghyId);
+
+        // DEBUG
+        var_dump($response);
 
         // TODO: make user
-        return new User();
+        return (new User())->map([
+            'loghyId' => $loghyId
+        ]);
     }
 
     /**
@@ -290,5 +292,58 @@ class Loghy implements LoghyInterface
 
         $loghyId = $data['lgid'] ?? throw new NotExpectedResponseException();
         return (string)$loghyId;
+    }
+
+        /**
+     * Get user information from a Loghy ID
+     *
+     * @param string $loghyId
+     * @return array<string,array|bool|int|string>|null
+     */
+    public function _getUserInfo(
+        string $loghyId
+    ): ?array {
+        return $this->_requestApi('lgid2get', $loghyId);
+    }
+
+    /**
+     * Request API
+     *
+     * @param string $command
+     * @param string $id
+     * @param string $mid
+     * @return array<string,array|bool|int|string>|null
+     */
+    private function _requestApi(
+        string $command,
+        string $id,
+        string $mid = ''
+    ): ?array {
+        // $url = 'https://api001.sns-loghy.jp/api/' . $command;
+        $url = 'http://localhost:8081/api/' . $command; // DEBUG
+
+        $atype = 'site';
+        $time = time();
+        $skey = hash(
+            'sha256',
+            $command . $atype . $this->siteCode . $id . $mid . $time . $this->apiKey
+        );
+        $data = [
+            'cmd' => $command,
+            'atype' => $atype,
+            'sid' => $this->siteCode,
+            'id' => $id,
+            'mid' => $mid,
+            'time' => $time,
+            'skey' => $skey,
+        ];
+
+        $response = $this->httpClient()->request('GET', $url, [
+            'query' => $data
+        ]);
+
+        $body = (string) $response->getBody();
+        $content = json_decode($body, true);
+        return $content;
     }
 }
