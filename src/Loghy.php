@@ -275,7 +275,7 @@ class Loghy implements LoghyInterface
     }
 
     /**
-     * 
+     *
      */
     private function verifyDataResponse(array $response): array
     {
