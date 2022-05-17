@@ -221,9 +221,6 @@ class Loghy implements LoghyInterface
         // TODO: Invalid code exception
         // TODO: Other Error
 
-        var_dump($response);
-
-
 
         // TODO: get user
 
@@ -259,6 +256,8 @@ class Loghy implements LoghyInterface
         $body = (string) $response->getBody();
         $content = json_decode($body, true);
 
+        var_dump($content); // DEBUG
+
         // TODO: cache provider type (`social_login`) ?
 
         $loghyId = $this->verifyGetLoghyIdResponse($content);
@@ -277,23 +276,18 @@ class Loghy implements LoghyInterface
     protected function verifyGetLoghyIdResponse(array $response): string
     {
         if (!($response['result'] ?? false)) {
-            $errorCode = $response['error_code'] ?? -1;
+            $errorCode = $response['error_code'] ?? null;
             if ($errorCode === 211) {
                 throw new InvalidCodeException($response['error_message'] ?? '', $errorCode);
             }
             throw new NotExpectedResponseException;
         }
 
-        $data = $content['data'] ?? null;
+        $data = $response['data'] ?? null;
         if (!is_array($data)) {
             throw new NotExpectedResponseException;
         }
 
-        $loghyId = $data['lgid'] ?? null;
-        if (!is_string($loghyId)) {
-            throw new NotExpectedResponseException;
-        }
-
-        return $loghyId;
+        return $data['lgid'] ?? throw new NotExpectedResponseException();
     }
 }
