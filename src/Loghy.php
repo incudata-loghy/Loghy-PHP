@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Loghy\SDK;
 
-use Exception;
 use GuzzleHttp\Client;
 use Loghy\SDK\Contract\LoghyInterface;
 use Loghy\SDK\Contract\User as ContractUser;
-use Loghy\SDK\Exceptions\InvalidCodeException;
-use Loghy\SDK\Exceptions\NotExpectedResponseException;
 use RuntimeException;
 
 /**
@@ -38,133 +35,6 @@ class Loghy implements LoghyInterface
         private string $siteCode
     ) {
     }
-
-    /**
-     * Get Loghy ID from a authentication code
-     *
-     * @param string $code
-     * @return array<string,array|bool|int|string>|null
-     */
-    public function getLoghyId(
-        string $code
-    ): ?array {
-        $url = 'https://api001.sns-loghy.jp/api/' . 'loghyid';
-        $data = [ 'code' => $code ];
-
-        $response = $this->httpClient()->request('POST', $url, [
-            'form_params' => $data
-        ]);
-
-        $body = (string) $response->getBody();
-        $content = json_decode($body, true);
-        return $content;
-    }
-
-    /**
-     * Get user information from a Loghy ID
-     *
-     * @param string $loghyId
-     * @return array<string,array|bool|int|string>|null
-     */
-    public function getUserInfo(
-        string $loghyId
-    ): ?array {
-        return $this->requestApi('lgid2get', $loghyId);
-    }
-
-    /**
-     * Set user ID by site to a Loghy ID
-     *
-     * @param string $loghyId
-     * @param string $userId
-     * @return array<string,bool|int|string>|null
-     */
-    public function putUserId(
-        string $loghyId,
-        string $userId
-    ): ?array {
-        return $this->requestApi('lgid2set', $loghyId, $userId);
-    }
-
-    /**
-     * Delete user ID by site from a Loghy ID
-     *
-     * @param string $loghyId
-     * @return array<string,bool|int|string>|null
-     */
-    public function deleteUserId(
-        string $loghyId
-    ): ?array {
-        return $this->requestApi('lgid2sdel', $loghyId);
-    }
-
-    /**
-     * Delete user information from a Loghy ID
-     *
-     * @param string $loghyId
-     * @return array<string,bool|int|string>|null
-     */
-    public function deleteUserInfo(
-        string $loghyId
-    ): ?array {
-        return $this->requestApi('lgid2pdel', $loghyId);
-    }
-
-    /**
-     * Delete Loghy ID
-     *
-     * @param string $loghyId
-     * @return array<string,bool|int|string>|null
-     */
-    public function deleteLoghyId(
-        string $loghyId
-    ): ?array {
-        return $this->requestApi('lgid2del', $loghyId);
-    }
-
-    /**
-     * Request API
-     *
-     * @param string $command
-     * @param string $id
-     * @param string $mid
-     * @return array<string,array|bool|int|string>|null
-     */
-    private function requestApi(
-        string $command,
-        string $id,
-        string $mid = ''
-    ): ?array {
-        $url = 'https://api001.sns-loghy.jp/api/' . $command;
-
-        $atype = 'site';
-        $time = time();
-        $skey = hash(
-            'sha256',
-            $command . $atype . $this->siteCode . $id . $mid . $time . $this->apiKey
-        );
-        $data = [
-            'cmd' => $command,
-            'atype' => $atype,
-            'sid' => $this->siteCode,
-            'id' => $id,
-            'mid' => $mid,
-            'time' => $time,
-            'skey' => $skey,
-        ];
-
-        $response = $this->httpClient()->request('GET', $url, [
-            'query' => $data
-        ]);
-
-        $body = (string) $response->getBody();
-        $content = json_decode($body, true);
-        return $content;
-    }
-
-    /////////////////////////////////////////////////
-    /////////////////////////////////////////////////
-    /////////////////////////////////////////////////
 
     /**
      * Set Guzzle HTTP client
@@ -217,14 +87,14 @@ class Loghy implements LoghyInterface
         }
         $this->user ??= new User();
 
-        $data = $this->_getLoghyId($this->getCode());
+        $data = $this->getLoghyId($this->getCode());
         $this->user->map([
             'type' => $data['social_login'] ?? null,
             'loghyId' => isset($data['lgid']) ? (string)$data['lgid'] : null,
             'userId' => $data['site_id'] ?? null,
         ]);
 
-        $userInfo = $this->_getUserInfo($this->user->getLoghyId());
+        $userInfo = $this->getUserInfo($this->user->getLoghyId());
         $this->user->map([
             'id' => $userInfo['sid'] ?? null,
             'name' => $userInfo['name'] ?? null,
@@ -243,7 +113,7 @@ class Loghy implements LoghyInterface
      * @throws \Loghy\SDK\Exceptions\InvalidCodeException
      * @throws \Loghy\SDK\Exceptions\NotExpectedResponseException
      */
-    protected function _getLoghyId(
+    protected function getLoghyId(
         string $code
     ): array {
         // $url = 'https://api001.sns-loghy.jp/api/' . 'loghyid';
@@ -265,13 +135,31 @@ class Loghy implements LoghyInterface
      * @param string $loghyId
      * @return array<string,array|bool|int|string>|null
      */
-    protected function _getUserInfo(
+    protected function getUserInfo(
         string $loghyId
     ): ?array {
-        $response = $this->_requestApi('lgid2get', $loghyId);
+        $response = $this->requestApi('lgid2get', $loghyId);
         $data = $this->verifyDataResponse($response);
 
         return $data['personal_data'] ?? throw new RuntimeException('Invalid structure.');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function putUserId(string $loghyId, string $userId): bool
+    {
+        // TODO
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function deleteLoghyId(string $loghyId): bool
+    {
+        // TODO
+        return false;
     }
 
     /**
@@ -301,7 +189,7 @@ class Loghy implements LoghyInterface
      * @param string $mid
      * @return array<string,array|bool|int|string>|null
      */
-    private function _requestApi(
+    private function requestApi(
         string $command,
         string $id,
         string $mid = ''

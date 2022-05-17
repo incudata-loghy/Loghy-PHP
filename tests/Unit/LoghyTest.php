@@ -2,13 +2,9 @@
 
 declare(strict_types=1);
 
-use Loghy\SDK\Exceptions\InvalidCodeException;
-use Loghy\SDK\Exceptions\NotExpectedResponseException;
-
 beforeEach(function (): void {
     $this->configuration = ['__apiKey__', '__siteCode__'];
 });
-
 
 test('httpClient() returns the same instance of the GuzzleHttp\Client class that was provided at setHttpClient()', function () {
     $loghy = new Loghy\SDK\Loghy(...$this->configuration);
