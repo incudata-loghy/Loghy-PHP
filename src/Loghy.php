@@ -147,8 +147,12 @@ class Loghy implements LoghyInterface
     /**
      * {@inheritdoc}
      */
-    public function putUserId(string $loghyId, string $userId): bool
+    public function putUserId(string $userId, string $loghyId = null): bool
     {
+        $response = $this->requestApi('lgid2set', $loghyId, $userId);
+
+        var_dump($response); // DEBUG
+
         // TODO
         return false;
     }
@@ -156,7 +160,7 @@ class Loghy implements LoghyInterface
     /**
      * {@inheritdoc}
      */
-    public function deleteLoghyId(string $loghyId): bool
+    public function deleteLoghyId(string $loghyId = null): bool
     {
         // TODO
         return false;

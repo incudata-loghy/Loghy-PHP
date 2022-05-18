@@ -26,17 +26,17 @@ interface LoghyInterface
     /**
      * Set user ID by site to a Loghy ID
      *
-     * @param string $loghyId
      * @param string $userId
+     * @param string|null $loghyId
      * @return bool
      */
-    public function putUserId(string $loghyId, string $userId): bool;
+    public function putUserId(string $userId, string $loghyId = null): bool;
 
     /**
      * Delete Loghy ID
      *
-     * @param string $loghyId
+     * @param string|null $loghyId
      * @return bool
      */
-    public function deleteLoghyId(string $loghyId): bool;
+    public function deleteLoghyId(string $loghyId = null): bool;
 }
