@@ -79,6 +79,8 @@ class Loghy implements LoghyInterface
 
     /**
      * {@inheritdoc}
+     * 
+     * @throws \RuntimeException
      */
     public function user(): ContractUser
     {
@@ -109,9 +111,8 @@ class Loghy implements LoghyInterface
      *
      * @param string $code
      * @return array
-     *
-     * @throws \Loghy\SDK\Exceptions\InvalidCodeException
-     * @throws \Loghy\SDK\Exceptions\NotExpectedResponseException
+     * 
+     * @throws \RuntimeException
      */
     protected function getLoghyId(
         string $code
@@ -126,7 +127,7 @@ class Loghy implements LoghyInterface
         $body = (string) $response->getBody();
         $content = json_decode($body, true);
 
-        return $this->verifyDataResponse($content);
+        return $this->verifyResponse($content);
     }
 
     /**
@@ -134,40 +135,35 @@ class Loghy implements LoghyInterface
      *
      * @param string $loghyId
      * @return array<string,array|bool|int|string>|null
+     * 
+     * @throws \RuntimeException
      */
     protected function getUserInfo(
         string $loghyId
     ): ?array {
         $response = $this->requestApi('lgid2get', $loghyId);
-        $data = $this->verifyDataResponse($response);
+        $data = $this->verifyResponse($response);
 
         return $data['personal_data'] ?? throw new RuntimeException('Invalid structure.');
     }
 
     /**
      * {@inheritdoc}
+     * 
+     * @throws \RuntimeException
      */
     public function putUserId(string $userId, string $loghyId = null): bool
     {
         $loghyId = $loghyId ?? $this->user()->getLoghyId();
         $response = $this->requestApi('lgid2set', $loghyId, $userId);
 
-        if (!isset($response['result']) || is_bool($response['result'])) {
-            throw new RuntimeException('Invalid structure.');
-        }
+        $this->verifyResponse($response, false);
 
-        if ($response['result'] === true) {
-            $this->user ??= new User();
-            $this->user = ($this->user ?? new User())->map([
-                'loghyId' => $loghyId,
-                'userId' => $userId,
-            ]);
-            return true;
-        }
-
-        throw new RuntimeException(
-            $response[]
-        )
+        $this->user = ($this->user ?? new User())->map([
+            'loghyId' => $loghyId,
+            'userId' => $userId,
+        ]);
+        return true;
     }
 
     /**
@@ -180,16 +176,26 @@ class Loghy implements LoghyInterface
     }
 
     /**
-     *
+     * @param array $response
+     * @param bool $hasData
+     * @return array|bool
+     * 
+     * @throws \RuntimeException
      */
-    private function verifyDataResponse(array $response, bool $hasData = true): array
+    private function verifyResponse(array $response, bool $hasData = true): array|bool
     {
-        if (!isset($response['result']) || ($hasData && !isset($response['data']))) {
+        if (!isset($response['result']) || !is_bool($response['result'])) {
+            throw new RuntimeException('Invalid structure.');
+        }
+        if($hasData && (!isset($response['data']) || !is_array($response['data']))) {
             throw new RuntimeException('Invalid structure.');
         }
 
         if ($response['result']) {
-            return $response['data'];
+            if ($hasData) {
+                return $response['data'];
+            }
+            return true;
         }
 
         throw new RuntimeException(

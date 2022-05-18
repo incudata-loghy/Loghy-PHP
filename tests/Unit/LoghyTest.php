@@ -75,6 +75,26 @@ test('user() returns the User instance for the authenticated user', function (ar
     ]);
 })->with('loghy_id_response')->with('personal_data_response');
 
+test('putUserId() sets user_id to user', function () {
+    $loghy = new Loghy\SDK\Loghy(...$this->configuration);
+
+    $client = makeGuzzleJsonMockClient(['result' => true]);
+    $loghy->setHttpClient($client);
+
+    expect($loghy->putUserId('__user_id__', '__loghy_id__'))->toBeTrue();
+    expect($loghy->user()->getLoghyId())->toEqual('__loghy_id__');
+    expect($loghy->user()->getUserId())->toEqual('__user_id__');
+});
+
+test('putUserId() throws exception with NG response', function (array $response) {
+    $loghy = new Loghy\SDK\Loghy(...$this->configuration);
+
+    $client = makeGuzzleJsonMockClient($response);
+    $loghy->setHttpClient($client);
+
+    $loghy->putUserId('__user_id__', '__loghy_id__');
+})->with('ng_response')->throws(RuntimeException::class);
+
 function makeGuzzleJsonMockClient(
     array ...$data
 ): GuzzleHttp\Client {

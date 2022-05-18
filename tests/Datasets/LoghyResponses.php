@@ -38,8 +38,7 @@ dataset('unsupported_response', [
     'without_result' => [['data' => []]],
 ]);
 
-dataset('ok_response', function () {
-    yield fn () => [
-        'result' => true,
-    ];
-});
+dataset('ng_response', [
+    'expired' => [['result' => false, 'error_code' => 898, 'error_message' => 'time error']],
+    'invalid_token' => [['result' => false, 'error_code' => 999, 'error_message' => 'key error']],
+]);
