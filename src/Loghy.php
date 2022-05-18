@@ -79,7 +79,7 @@ class Loghy implements LoghyInterface
 
     /**
      * {@inheritdoc}
-     * 
+     *
      * @throws \RuntimeException
      */
     public function user(): ContractUser
@@ -111,7 +111,7 @@ class Loghy implements LoghyInterface
      *
      * @param string $code
      * @return array
-     * 
+     *
      * @throws \RuntimeException
      */
     protected function getLoghyId(
@@ -135,7 +135,7 @@ class Loghy implements LoghyInterface
      *
      * @param string $loghyId
      * @return array<string,array|bool|int|string>|null
-     * 
+     *
      * @throws \RuntimeException
      */
     protected function getUserInfo(
@@ -149,7 +149,7 @@ class Loghy implements LoghyInterface
 
     /**
      * {@inheritdoc}
-     * 
+     *
      * @throws \RuntimeException
      */
     public function putUserId(string $userId, string $loghyId = null): bool
@@ -179,7 +179,7 @@ class Loghy implements LoghyInterface
      * @param array $response
      * @param bool $hasData
      * @return array|bool
-     * 
+     *
      * @throws \RuntimeException
      */
     private function verifyResponse(array $response, bool $hasData = true): array|bool
@@ -187,7 +187,7 @@ class Loghy implements LoghyInterface
         if (!isset($response['result']) || !is_bool($response['result'])) {
             throw new RuntimeException('Invalid structure.');
         }
-        if($hasData && (!isset($response['data']) || !is_array($response['data']))) {
+        if ($hasData && (!isset($response['data']) || !is_array($response['data']))) {
             throw new RuntimeException('Invalid structure.');
         }
 
