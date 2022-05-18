@@ -149,12 +149,25 @@ class Loghy implements LoghyInterface
      */
     public function putUserId(string $userId, string $loghyId = null): bool
     {
+        $loghyId = $loghyId ?? $this->user()->getLoghyId();
         $response = $this->requestApi('lgid2set', $loghyId, $userId);
 
-        var_dump($response); // DEBUG
+        if (!isset($response['result']) || is_bool($response['result'])) {
+            throw new RuntimeException('Invalid structure.');
+        }
 
-        // TODO
-        return false;
+        if ($response['result'] === true) {
+            $this->user ??= new User();
+            $this->user = ($this->user ?? new User())->map([
+                'loghyId' => $loghyId,
+                'userId' => $userId,
+            ]);
+            return true;
+        }
+
+        throw new RuntimeException(
+            $response[]
+        )
     }
 
     /**
@@ -169,9 +182,9 @@ class Loghy implements LoghyInterface
     /**
      *
      */
-    private function verifyDataResponse(array $response): array
+    private function verifyDataResponse(array $response, bool $hasData = true): array
     {
-        if (!isset($response['result']) || !isset($response['data'])) {
+        if (!isset($response['result']) || ($hasData && !isset($response['data']))) {
             throw new RuntimeException('Invalid structure.');
         }
 
