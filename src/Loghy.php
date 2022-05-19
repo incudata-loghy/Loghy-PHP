@@ -6,6 +6,8 @@ namespace Loghy\SDK;
 
 use GuzzleHttp\Client;
 use Loghy\SDK\Contract\LoghyInterface;
+use Loghy\SDK\Contract\User as ContractUser;
+use RuntimeException;
 
 /**
  * Class Loghy.
@@ -17,6 +19,17 @@ class Loghy implements LoghyInterface
      */
     protected ?Client $client;
 
+    /**
+     * The authorization code.
+     */
+    protected ?string $code = null;
+
+    /**
+     * The cached user instance.
+     */
+    protected ?User $user = null;
+
+
     public function __construct(
         private string $apiKey,
         private string $siteCode
@@ -24,86 +37,178 @@ class Loghy implements LoghyInterface
     }
 
     /**
-     * Get Loghy ID from a authentication code
+     * Set Guzzle HTTP client
+     *
+     * @param \GuzzleHttp\Client $client
+     */
+    public function setHttpClient(
+        Client $client
+    ): self {
+        $this->client = $client;
+        return $this;
+    }
+
+    /**
+     * Get Guzzle HTTP Client
+     *
+     * @return \GuzzleHttp\Client
+     */
+    public function httpClient(): Client
+    {
+        return $this->client ?? new Client();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setCode(string $code): static
+    {
+        $this->code = $code;
+        return $this;
+    }
+
+    /**
+     * Get the authorization code.
+     *
+     * @return string|null
+     */
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws \RuntimeException
+     */
+    public function user(): ContractUser
+    {
+        if ($this->user) {
+            return $this->user;
+        }
+        $this->user ??= new User();
+
+        $data = $this->getLoghyId(
+            $this->getCode() ?? throw new RuntimeException('The code is not set yet.')
+        );
+        $this->user->map([
+            'type' => $data['social_login'] ?? null,
+            'loghyId' => isset($data['lgid']) ? (string)$data['lgid'] : null,
+            'userId' => $data['site_id'] ?? null,
+        ]);
+
+        $userInfo = $this->getUserInfo($this->user->getLoghyId());
+        $this->user->map([
+            'id' => $userInfo['sid'] ?? null,
+            'name' => $userInfo['name'] ?? null,
+            'email' => $userInfo['email'] ?? null,
+        ])->setRaw($userInfo);
+
+        return $this->user;
+    }
+
+    /**
+     * Get Loghy ID response from a authentication code.
      *
      * @param string $code
-     * @return array<string,array|bool|int|string>|null
+     * @return array
+     *
+     * @throws \RuntimeException
      */
-    public function getLoghyId(
+    protected function getLoghyId(
         string $code
-    ): ?array {
-        $url = 'https://api001.sns-loghy.jp/api/' . 'loghyid';
+    ): array {
+        // $url = 'https://api001.sns-loghy.jp/api/' . 'loghyid';
+        $url = 'http://localhost:8081/api/' . 'loghyid'; // DEBUG
         $data = [ 'code' => $code ];
-
         $response = $this->httpClient()->request('POST', $url, [
             'form_params' => $data
         ]);
 
         $body = (string) $response->getBody();
         $content = json_decode($body, true);
-        return $content;
+
+        return $this->verifyResponse($content);
     }
 
     /**
      * Get user information from a Loghy ID
      *
      * @param string $loghyId
-     * @return array<string,array|bool|int|string>|null
+     * @return array<string,array|bool|int|string>
+     *
+     * @throws \RuntimeException
      */
-    public function getUserInfo(
+    protected function getUserInfo(
         string $loghyId
-    ): ?array {
-        return $this->requestApi('lgid2get', $loghyId);
+    ): array {
+        $response = $this->requestApi('lgid2get', $loghyId);
+        $data = $this->verifyResponse($response);
+
+        return $data['personal_data'] ?? throw new RuntimeException('Invalid structure.');
     }
 
     /**
-     * Set user ID by site to a Loghy ID
+     * {@inheritdoc}
      *
-     * @param string $loghyId
-     * @param string $userId
-     * @return array<string,bool|int|string>|null
+     * @throws \RuntimeException
      */
-    public function putUserId(
-        string $loghyId,
-        string $userId
-    ): ?array {
-        return $this->requestApi('lgid2set', $loghyId, $userId);
+    public function putUserId(string $userId, string $loghyId = null): bool
+    {
+        $loghyId = $loghyId ?? $this->user()->getLoghyId();
+        $response = $this->requestApi('lgid2set', $loghyId, $userId);
+
+        $this->verifyResponse($response, false);
+
+        $this->user = ($this->user ?? new User())->map([
+            'loghyId' => $loghyId,
+            'userId' => $userId,
+        ]);
+        return true;
     }
 
     /**
-     * Delete user ID by site from a Loghy ID
-     *
-     * @param string $loghyId
-     * @return array<string,bool|int|string>|null
+     * {@inheritdoc}
      */
-    public function deleteUserId(
-        string $loghyId
-    ): ?array {
-        return $this->requestApi('lgid2sdel', $loghyId);
+    public function deleteUser(string $loghyId = null): bool
+    {
+        $loghyId = $loghyId ?? $this->user()->getLoghyId();
+        $response = $this->requestApi('lgid2del', $loghyId);
+
+        $this->verifyResponse($response, false);
+
+        $this->user = null;
+        return true;
     }
 
     /**
-     * Delete user information from a Loghy ID
+     * @param array $response
+     * @param bool $hasData
+     * @return array|bool
      *
-     * @param string $loghyId
-     * @return array<string,bool|int|string>|null
+     * @throws \RuntimeException
      */
-    public function deleteUserInfo(
-        string $loghyId
-    ): ?array {
-        return $this->requestApi('lgid2pdel', $loghyId);
-    }
+    private function verifyResponse(array $response, bool $hasData = true): array|bool
+    {
+        if (!isset($response['result']) || !is_bool($response['result'])) {
+            throw new RuntimeException('Invalid structure.');
+        }
+        if ($hasData && (!isset($response['data']) || !is_array($response['data']))) {
+            throw new RuntimeException('Invalid structure.');
+        }
 
-    /**
-     * Delete Loghy ID
-     *
-     * @param string $loghyId
-     * @return array<string,bool|int|string>|null
-     */
-    public function deleteLoghyId(
-        string $loghyId
-    ): ?array {
-        return $this->requestApi('lgid2del', $loghyId);
+        if ($response['result']) {
+            if ($hasData) {
+                return $response['data'];
+            }
+            return true;
+        }
+
+        throw new RuntimeException(
+            $response['error_message'] ?? '',
+            $response['error_code'] ?? 0
+        );
     }
 
     /**
@@ -112,14 +217,15 @@ class Loghy implements LoghyInterface
      * @param string $command
      * @param string $id
      * @param string $mid
-     * @return array<string,array|bool|int|string>|null
+     * @return array|null
      */
     private function requestApi(
         string $command,
         string $id,
         string $mid = ''
     ): ?array {
-        $url = 'https://api001.sns-loghy.jp/api/' . $command;
+        // $url = 'https://api001.sns-loghy.jp/api/' . $command;
+        $url = 'http://localhost:8081/api/' . $command; // DEBUG
 
         $atype = 'site';
         $time = time();
@@ -144,26 +250,5 @@ class Loghy implements LoghyInterface
         $body = (string) $response->getBody();
         $content = json_decode($body, true);
         return $content;
-    }
-
-    /**
-     * Set Guzzle HTTP client
-     *
-     * @param \GuzzleHttp\Client $client
-     */
-    public function setHttpClient(
-        Client $client
-    ): void {
-        $this->client = $client;
-    }
-
-    /**
-     * Get Guzzle HTTP Client
-     *
-     * @return \GuzzleHttp\Client
-     */
-    public function httpClient(): Client
-    {
-        return $this->client ?? new Client();
     }
 }
