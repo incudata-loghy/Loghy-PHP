@@ -172,7 +172,7 @@ class Loghy implements LoghyInterface
     public function deleteUser(string $loghyId = null): bool
     {
         $loghyId = $loghyId ?? $this->user()->getLoghyId();
-        $response = $this->requestApi('lgid2sdel', $loghyId);
+        $response = $this->requestApi('lgid2del', $loghyId);
 
         $this->verifyResponse($response, false);
 
