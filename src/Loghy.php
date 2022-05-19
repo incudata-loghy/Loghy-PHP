@@ -119,8 +119,7 @@ class Loghy implements LoghyInterface
     protected function getLoghyId(
         string $code
     ): array {
-        // $url = 'https://api001.sns-loghy.jp/api/' . 'loghyid';
-        $url = 'http://localhost:8081/api/' . 'loghyid'; // DEBUG
+        $url = 'https://api001.sns-loghy.jp/api/' . 'loghyid';
         $data = [ 'code' => $code ];
         $response = $this->httpClient()->request('POST', $url, [
             'form_params' => $data
@@ -224,8 +223,7 @@ class Loghy implements LoghyInterface
         string $id,
         string $mid = ''
     ): ?array {
-        // $url = 'https://api001.sns-loghy.jp/api/' . $command;
-        $url = 'http://localhost:8081/api/' . $command; // DEBUG
+        $url = 'https://api001.sns-loghy.jp/api/' . $command;
 
         $atype = 'site';
         $time = time();
