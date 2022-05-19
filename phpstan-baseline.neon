@@ -1,0 +1,76 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Cannot access offset 'personal_data' on array\\|bool\\.$#"
+			count: 1
+			path: src/Loghy.php
+
+		-
+			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:getLoghyId\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Loghy.php
+
+		-
+			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:getLoghyId\\(\\) should return array but returns array\\|bool\\.$#"
+			count: 1
+			path: src/Loghy.php
+
+		-
+			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:getUserInfo\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Loghy.php
+
+		-
+			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:requestApi\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Loghy.php
+
+		-
+			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:requestApi\\(\\) should return array\\|null but returns mixed\\.$#"
+			count: 1
+			path: src/Loghy.php
+
+		-
+			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:verifyResponse\\(\\) has parameter \\$response with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Loghy.php
+
+		-
+			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:verifyResponse\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Loghy.php
+
+		-
+			message: "#^Parameter \\#1 \\$response of method Loghy\\\\SDK\\\\Loghy\\:\\:verifyResponse\\(\\) expects array, array\\|null given\\.$#"
+			count: 3
+			path: src/Loghy.php
+
+		-
+			message: "#^Parameter \\#1 \\$response of method Loghy\\\\SDK\\\\Loghy\\:\\:verifyResponse\\(\\) expects array, mixed given\\.$#"
+			count: 1
+			path: src/Loghy.php
+
+		-
+			message: "#^Class Loghy\\\\SDK\\\\User implements generic interface ArrayAccess but does not specify its types\\: TKey, TValue$#"
+			count: 1
+			path: src/User.php
+
+		-
+			message: "#^Method Loghy\\\\SDK\\\\User\\:\\:getRaw\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/User.php
+
+		-
+			message: "#^Method Loghy\\\\SDK\\\\User\\:\\:map\\(\\) has parameter \\$attributes with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/User.php
+
+		-
+			message: "#^Method Loghy\\\\SDK\\\\User\\:\\:setRaw\\(\\) has parameter \\$user with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/User.php
+
+		-
+			message: "#^Property Loghy\\\\SDK\\\\User\\:\\:\\$user type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/User.php

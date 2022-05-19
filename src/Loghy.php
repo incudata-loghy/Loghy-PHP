@@ -89,7 +89,9 @@ class Loghy implements LoghyInterface
         }
         $this->user ??= new User();
 
-        $data = $this->getLoghyId($this->getCode());
+        $data = $this->getLoghyId(
+            $this->getCode() ?? throw new RuntimeException('The code is not set yet.')
+        );
         $this->user->map([
             'type' => $data['social_login'] ?? null,
             'loghyId' => isset($data['lgid']) ? (string)$data['lgid'] : null,
@@ -134,13 +136,13 @@ class Loghy implements LoghyInterface
      * Get user information from a Loghy ID
      *
      * @param string $loghyId
-     * @return array<string,array|bool|int|string>|null
+     * @return array<string,array|bool|int|string>
      *
      * @throws \RuntimeException
      */
     protected function getUserInfo(
         string $loghyId
-    ): ?array {
+    ): array {
         $response = $this->requestApi('lgid2get', $loghyId);
         $data = $this->verifyResponse($response);
 
@@ -215,7 +217,7 @@ class Loghy implements LoghyInterface
      * @param string $command
      * @param string $id
      * @param string $mid
-     * @return array<string,array|bool|int|string>|null
+     * @return array|null
      */
     private function requestApi(
         string $command,

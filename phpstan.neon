@@ -1,9 +1,7 @@
+includes:
+	- phpstan-baseline.neon
+
 parameters:
     level: max
     paths:
         - src
-
-    ignoreErrors:
-        - '#Method [a-zA-Z0-9\\_]+::[a-zA-Z0-9\\_]+\(\) return type has no value type specified in iterable type array.#'
-        - '#Method [a-zA-Z0-9\\_]+::[a-zA-Z0-9\\_]+\(\) should return array<string, array\|bool\|int\|string>\|null but returns mixed.#'
-        - '#Method [a-zA-Z0-9\\_]+::[a-zA-Z0-9\\_]+\(\) should return array<string, bool\|int\|string>\|null but returns array<string, array\|bool\|int\|string>\|null.#'
