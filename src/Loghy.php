@@ -169,10 +169,15 @@ class Loghy implements LoghyInterface
     /**
      * {@inheritdoc}
      */
-    public function deleteLoghyId(string $loghyId = null): bool
+    public function deleteUser(string $loghyId = null): bool
     {
-        // TODO
-        return false;
+        $loghyId = $loghyId ?? $this->user()->getLoghyId();
+        $response = $this->requestApi('lgid2sdel', $loghyId);
+
+        $this->verifyResponse($response, false);
+
+        $this->user = null;
+        return true;
     }
 
     /**

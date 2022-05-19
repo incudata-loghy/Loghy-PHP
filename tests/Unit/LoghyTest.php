@@ -95,6 +95,24 @@ test('putUserId() throws exception with NG response', function (array $response)
     $loghy->putUserId('__user_id__', '__loghy_id__');
 })->with('ng_response')->throws(RuntimeException::class);
 
+test('deleteUser() deletes user', function () {
+    $loghy = new Loghy\SDK\Loghy(...$this->configuration);
+
+    $client = makeGuzzleJsonMockClient(['result' => true]);
+    $loghy->setHttpClient($client);
+
+    expect($loghy->deleteUser('__loghy_id__'))->toBeTrue();
+});
+
+test('deleteUser() throws exception with NG response', function (array $response) {
+    $loghy = new Loghy\SDK\Loghy(...$this->configuration);
+
+    $client = makeGuzzleJsonMockClient($response);
+    $loghy->setHttpClient($client);
+
+    $loghy->deleteUser('__loghy_id__');
+})->with('ng_response')->throws(RuntimeException::class);
+
 function makeGuzzleJsonMockClient(
     array ...$data
 ): GuzzleHttp\Client {

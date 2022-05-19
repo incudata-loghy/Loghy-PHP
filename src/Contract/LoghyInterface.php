@@ -24,7 +24,7 @@ interface LoghyInterface
     public function user(): User;
 
     /**
-     * Set user ID by site to a Loghy ID
+     * Set user ID by site to a Loghy ID.
      *
      * @param string $userId
      * @param string|null $loghyId
@@ -33,10 +33,10 @@ interface LoghyInterface
     public function putUserId(string $userId, string $loghyId = null): bool;
 
     /**
-     * Delete Loghy ID
+     * Delete user (Loghy ID).
      *
      * @param string|null $loghyId
      * @return bool
      */
-    public function deleteLoghyId(string $loghyId = null): bool;
+    public function deleteUser(string $loghyId = null): bool;
 }
