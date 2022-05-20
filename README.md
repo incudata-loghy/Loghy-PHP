@@ -17,12 +17,14 @@ use Loghy\SDK\Loghy;
 $loghy = new Loghy('{YOUR_API_KEY}', '{YOUR_SITE_CODE}');
 ```
 
-### Get Loghy ID from authentication code
+### Get authenticated user from authentication code
 
 ```php
 <?php
 
-$res = $loghy->getLoghyId($code);
-$data = $res['data'] ?? null;
-$loghyId = $data['lgid'] ?? null;
+$user = $loghy->setCode($code)->user();
+
+$loghyId = $user->getLoghyId();
+$name    = $user->getName();
+$email   = $user->getEmail();
 ```
