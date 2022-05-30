@@ -22,6 +22,8 @@ $loghy = new Loghy('{YOUR_API_KEY}', '{YOUR_SITE_CODE}');
 ```php
 <?php
 
+// ...
+
 $user = $loghy->setCode($code)->user();
 
 $loghyId = $user->getLoghyId();
