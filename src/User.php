@@ -27,17 +27,17 @@ class User implements ContractUser, ArrayAccess
     /**
      * The identifier the user issued by the sites.
      */
-    public ?string $userId = null;
+    public ?string $userId;
 
     /**
      * The user's name.
      */
-    public ?string $name = null;
+    public ?string $name;
 
     /**
      * The user's e-mail address.
      */
-    public ?string $email = null;
+    public ?string $email;
 
     /**
      * The user's raw attributes.
