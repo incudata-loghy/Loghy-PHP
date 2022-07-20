@@ -55,7 +55,10 @@ class Loghy implements LoghyInterface
      */
     public function httpClient(): Client
     {
-        return $this->client ?? new Client();
+        if (!$this->client) {
+            $this->client = new Client(['base_uri' => $this->getApiUri()]);
+        }
+        return $this->client;
     }
 
     /**
@@ -119,9 +122,8 @@ class Loghy implements LoghyInterface
     protected function getLoghyId(
         string $code
     ): array {
-        $url = 'https://api001.sns-loghy.jp/api/' . 'loghyid';
         $data = [ 'code' => $code ];
-        $response = $this->httpClient()->request('POST', $url, [
+        $response = $this->httpClient()->request('POST', 'loghyid', [
             'form_params' => $data
         ]);
 
@@ -210,6 +212,11 @@ class Loghy implements LoghyInterface
         );
     }
 
+    protected function getApiUri(): string
+    {
+        return 'https://api001.sns-loghy.jp/api/';
+    }
+
     /**
      * Request API
      *
@@ -223,8 +230,6 @@ class Loghy implements LoghyInterface
         string $id,
         string $mid = ''
     ): ?array {
-        $url = 'https://api001.sns-loghy.jp/api/' . $command;
-
         $atype = 'site';
         $time = time();
         $skey = hash(
@@ -241,7 +246,7 @@ class Loghy implements LoghyInterface
             'skey' => $skey,
         ];
 
-        $response = $this->httpClient()->request('GET', $url, [
+        $response = $this->httpClient()->request('GET', $command, [
             'query' => $data
         ]);
 
