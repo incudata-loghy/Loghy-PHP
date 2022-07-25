@@ -1,6 +1,21 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Method Loghy\\\\SDK\\\\Exception\\\\InvalidResponseBodyStructureException\\:\\:__construct\\(\\) has parameter \\$response with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Exception/InvalidResponseBodyStructureException.php
+
+		-
+			message: "#^Method Loghy\\\\SDK\\\\Exception\\\\InvalidResponseBodyStructureException\\:\\:getResponse\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Exception/InvalidResponseBodyStructureException.php
+
+		-
+			message: "#^Property Loghy\\\\SDK\\\\Exception\\\\InvalidResponseBodyStructureException\\:\\:\\$response type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Exception/InvalidResponseBodyStructureException.php
+
+		-
 			message: "#^Cannot access offset 'personal_data' on array\\|bool\\.$#"
 			count: 1
 			path: src/Loghy.php
