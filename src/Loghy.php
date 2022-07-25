@@ -156,7 +156,8 @@ class Loghy implements LoghyInterface
         $data = $this->verifyResponse($response);
 
         return $data['personal_data'] ?? throw new InvalidResponseBodyStructureException(
-            'Data key value has no personal_data key.', $response
+            'Data key value has no personal_data key.',
+            $response
         );
     }
 
@@ -182,7 +183,7 @@ class Loghy implements LoghyInterface
 
     /**
      * {@inheritdoc}
-     * 
+     *
      * @throws \Loghy\SDK\Exception\LoghyException
      * @throws \Loghy\SDK\Exception\InvalidResponseBodyStructureException
      */
