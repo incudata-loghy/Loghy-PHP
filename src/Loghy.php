@@ -75,7 +75,7 @@ class Loghy implements LoghyInterface
     /**
      * Get the authorization code.
      *
-     * @return string|null
+     * @return string
      * @throws \Loghy\SDK\Exception\UnsetCodeException
      */
     public function getCode(): string
@@ -157,7 +157,7 @@ class Loghy implements LoghyInterface
 
         return $data['personal_data'] ?? throw new InvalidResponseBodyStructureException(
             'Data key value has no personal_data key.',
-            $response
+            $response ?? []
         );
     }
 
