@@ -7,7 +7,9 @@ namespace Loghy\SDK;
 use GuzzleHttp\Client;
 use Loghy\SDK\Contract\LoghyInterface;
 use Loghy\SDK\Contract\User as ContractUser;
-use RuntimeException;
+use Loghy\SDK\Exception\InvalidResponseBodyStructureException;
+use Loghy\SDK\Exception\LoghyException;
+use Loghy\SDK\Exception\UnsetCodeException;
 
 /**
  * Class Loghy.
@@ -74,16 +76,22 @@ class Loghy implements LoghyInterface
      * Get the authorization code.
      *
      * @return string|null
+     * @throws \Loghy\SDK\Exception\UnsetCodeException
      */
-    public function getCode(): ?string
+    public function getCode(): string
     {
-        return $this->code;
+        return $this->code ?? throw new UnsetCodeException(
+            'The authentication code has not been set. ' .
+            'Please call the setCode() method to set up.'
+        );
     }
 
     /**
      * {@inheritdoc}
      *
-     * @throws \RuntimeException
+     * @throws \Loghy\SDK\Exception\LoghyException
+     * @throws \Loghy\SDK\Exception\UnsetCodeException
+     * @throws \Loghy\SDK\Exception\InvalidResponseBodyStructureException
      */
     public function user(): ContractUser
     {
@@ -92,9 +100,7 @@ class Loghy implements LoghyInterface
         }
         $this->user ??= new User();
 
-        $data = $this->getLoghyId(
-            $this->getCode() ?? throw new RuntimeException('The code is not set yet.')
-        );
+        $data = $this->getLoghyId($this->getCode());
         $this->user->map([
             'type' => $data['social_login'] ?? null,
             'loghyId' => isset($data['lgid']) ? (string)$data['lgid'] : null,
@@ -117,7 +123,8 @@ class Loghy implements LoghyInterface
      * @param string $code
      * @return array
      *
-     * @throws \RuntimeException
+     * @throws \Loghy\SDK\Exception\LoghyException
+     * @throws \Loghy\SDK\Exception\InvalidResponseBodyStructureException
      */
     protected function getLoghyId(
         string $code
@@ -139,7 +146,8 @@ class Loghy implements LoghyInterface
      * @param string $loghyId
      * @return array<string,array|bool|int|string>
      *
-     * @throws \RuntimeException
+     * @throws \Loghy\SDK\Exception\LoghyException
+     * @throws \Loghy\SDK\Exception\InvalidResponseBodyStructureException
      */
     protected function getUserInfo(
         string $loghyId
@@ -147,13 +155,16 @@ class Loghy implements LoghyInterface
         $response = $this->requestApi('lgid2get', $loghyId);
         $data = $this->verifyResponse($response);
 
-        return $data['personal_data'] ?? throw new RuntimeException('Invalid structure.');
+        return $data['personal_data'] ?? throw new InvalidResponseBodyStructureException(
+            'Data key value has no personal_data key.', $response
+        );
     }
 
     /**
      * {@inheritdoc}
      *
-     * @throws \RuntimeException
+     * @throws \Loghy\SDK\Exception\LoghyException
+     * @throws \Loghy\SDK\Exception\InvalidResponseBodyStructureException
      */
     public function putUserId(string $userId, string $loghyId = null): bool
     {
@@ -171,6 +182,9 @@ class Loghy implements LoghyInterface
 
     /**
      * {@inheritdoc}
+     * 
+     * @throws \Loghy\SDK\Exception\LoghyException
+     * @throws \Loghy\SDK\Exception\InvalidResponseBodyStructureException
      */
     public function deleteUser(string $loghyId = null): bool
     {
@@ -188,15 +202,24 @@ class Loghy implements LoghyInterface
      * @param bool $hasData
      * @return array|bool
      *
-     * @throws \RuntimeException
+     * @throws \Loghy\SDK\Exception\LoghyException
+     * @throws \Loghy\SDK\Exception\InvalidResponseBodyStructureException
      */
     private function verifyResponse(array $response, bool $hasData = true): array|bool
     {
-        if (!isset($response['result']) || !is_bool($response['result'])) {
-            throw new RuntimeException('Invalid structure.');
+        if (!isset($response['result'])) {
+            throw new InvalidResponseBodyStructureException('The response json has no result key.', $response);
         }
-        if ($hasData && (!isset($response['data']) || !is_array($response['data']))) {
-            throw new RuntimeException('Invalid structure.');
+        if (!is_bool($response['result'])) {
+            throw new InvalidResponseBodyStructureException('Result key value is not bool.', $response);
+        }
+        if ($hasData) {
+            if (!isset($response['data'])) {
+                throw new InvalidResponseBodyStructureException('The response json has no data key.', $response);
+            }
+            if (!is_array($response['data'])) {
+                throw new InvalidResponseBodyStructureException('Data key value is not array.', $response);
+            }
         }
 
         if ($response['result']) {
@@ -206,7 +229,7 @@ class Loghy implements LoghyInterface
             return true;
         }
 
-        throw new RuntimeException(
+        throw new LoghyException(
             $response['error_message'] ?? '',
             $response['error_code'] ?? 0
         );

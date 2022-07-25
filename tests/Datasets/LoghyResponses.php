@@ -33,9 +33,10 @@ dataset('invalid_code_response', [
 ]);
 
 dataset('unsupported_response', [
-    'wrong_structure' => [['wrong_key' => 'wrong_value']],
-    'without_data' => [['result' => true]],
     'without_result' => [['data' => []]],
+    'result_is_not_bool' => [['result' => '__result__', 'data' => []]],
+    'without_data' => [['result' => true]],
+    'data_is_not_array' => [['result' => true, 'data' => '__data__']],
 ]);
 
 dataset('ng_response', [

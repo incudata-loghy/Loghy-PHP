@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use Loghy\SDK\Exception\InvalidResponseBodyStructureException;
+use Loghy\SDK\Exception\LoghyException;
+use Loghy\SDK\Exception\UnsetCodeException;
+
 beforeEach(function (): void {
     $this->configuration = ['__apiKey__', '__siteCode__'];
 });
@@ -26,6 +30,11 @@ test('getCode() returns the code that was provided at setCode()', function () {
         ->toEqual('__code__');
 });
 
+test('getCode() throws exception when the code has not been set', function () {
+    $loghy = new Loghy\SDK\Loghy(...$this->configuration);
+    $loghy->getCode();
+})->throws(UnsetCodeException::class, 'The authentication code has not been set. Please call the setCode() method to set up.');
+
 test('user() throws exception with invalid code', function (array $response) {
     $loghy = new Loghy\SDK\Loghy(...$this->configuration);
 
@@ -33,7 +42,7 @@ test('user() throws exception with invalid code', function (array $response) {
     $loghy->setHttpClient($client);
 
     $loghy->setCode('__code__')->user();
-})->with('invalid_code_response')->throws(RuntimeException::class);
+})->with('invalid_code_response')->throws(LoghyException::class);
 
 test('user() throws exception with unsupported response', function (array $response) {
     $loghy = new Loghy\SDK\Loghy(...$this->configuration);
@@ -42,7 +51,7 @@ test('user() throws exception with unsupported response', function (array $respo
     $loghy->setHttpClient($client);
 
     $loghy->setCode('__code__')->user();
-})->with('unsupported_response')->throws(RuntimeException::class, 'Invalid structure.');
+})->with('unsupported_response')->throws(InvalidResponseBodyStructureException::class);
 
 test('user() throws exception without personal_data', function (array $res1) {
     $loghy = new Loghy\SDK\Loghy(...$this->configuration);
@@ -52,7 +61,7 @@ test('user() throws exception without personal_data', function (array $res1) {
 
     $user = $loghy->setCode('__code__')->user();
 })->with('loghy_id_response')->with('personal_data_response')
-->throws(RuntimeException::class, 'Invalid structure.');
+->throws(InvalidResponseBodyStructureException::class, 'Data key value has no personal_data key.');
 
 test('user() returns the User instance for the authenticated user', function (array $res1, array $res2) {
     $loghy = new Loghy\SDK\Loghy(...$this->configuration);
@@ -93,7 +102,7 @@ test('putUserId() throws exception with NG response', function (array $response)
     $loghy->setHttpClient($client);
 
     $loghy->putUserId('__user_id__', '__loghy_id__');
-})->with('ng_response')->throws(RuntimeException::class);
+})->with('ng_response')->throws(LoghyException::class);
 
 test('deleteUser() deletes user', function () {
     $loghy = new Loghy\SDK\Loghy(...$this->configuration);
@@ -111,7 +120,7 @@ test('deleteUser() throws exception with NG response', function (array $response
     $loghy->setHttpClient($client);
 
     $loghy->deleteUser('__loghy_id__');
-})->with('ng_response')->throws(RuntimeException::class);
+})->with('ng_response')->throws(LoghyException::class);
 
 function makeGuzzleJsonMockClient(
     array ...$data
