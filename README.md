@@ -5,7 +5,7 @@
 ### Installation
 
 ```
-$ composer require --dev incudata-loghy/loghy-php
+$ composer require incudata-loghy/loghy-php
 ```
 
 ### SDK Initialization
