@@ -28,7 +28,7 @@ dataset('personal_data_response', [
 
 dataset('invalid_code_response', [
     'invalid_code' => [['result' => false, 'error_code' => 211, 'error_message' => 'The code passed is invalid.']],
-    'expired_code' => [['result' => false, 'error_code' => 211, 'error_message' => 'The authentication code is expired.']],
+    'expired_code' => [['result' => false, 'error_code' => 211, 'error_message' => 'The authorization code is expired.']],
     'missing_code' => [['result' => false, 'error_code' => 211, 'error_message' => 'Missing code parameter error']],
 ]);
 

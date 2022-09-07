@@ -17,7 +17,7 @@ use Loghy\SDK\Loghy;
 $loghy = new Loghy('{YOUR_API_KEY}', '{YOUR_SITE_CODE}');
 ```
 
-### Get authenticated user from authentication code
+### Get authenticated user from authorization code
 
 ```php
 <?php
