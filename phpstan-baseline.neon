@@ -11,11 +11,6 @@ parameters:
 			path: src/Exception/InvalidResponseBodyStructureException.php
 
 		-
-			message: "#^Property Loghy\\\\SDK\\\\Exception\\\\InvalidResponseBodyStructureException\\:\\:\\$response type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/Exception/InvalidResponseBodyStructureException.php
-
-		-
 			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:getResponseJson\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Loghy.php
@@ -63,11 +58,6 @@ parameters:
 		-
 			message: "#^Property Loghy\\\\SDK\\\\Loghy\\:\\:\\$userToken type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: src/Loghy.php
-
-		-
-			message: "#^Right side of && is always true\\.$#"
-			count: 2
 			path: src/Loghy.php
 
 		-
