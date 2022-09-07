@@ -192,9 +192,9 @@ class Loghy implements LoghyInterface
      * @throws \Loghy\SDK\Exception\LoghyException
      * @throws \Loghy\SDK\Exception\UnsetUserAccessTokenException
      */
-    public function socialProviderTokens(string $accessToken = null): array
+    public function socialProviderTokens(string $userAccessToken = null): array
     {
-        $accessToken ??= $this->userToken['access_token'] ?? throw new UnsetUserAccessTokenException(
+        $userAccessToken ??= $this->userToken['userAccessToken'] ?? throw new UnsetUserAccessTokenException(
             'The access token has not been set. ' .
                 'Please call socialProviderToken() method with the access token as an argument.'
         );
@@ -202,7 +202,7 @@ class Loghy implements LoghyInterface
         return $this->requestApi(
             method: 'GET',
             uri: 'user/social_provider_token',
-            headers: ['Authorization' => 'Bearer ' . $accessToken],
+            headers: ['Authorization' => 'Bearer ' . $userAccessToken],
         );
     }
 
@@ -374,48 +374,5 @@ class Loghy implements LoghyInterface
     protected function getApiUri(): string
     {
         return 'https://api001.sns-loghy.jp/api/v2/';
-    }
-
-    // TODO
-    ///////////////////////////////////////////////////////////÷
-    ///////////////////////////////////////////////////////////÷
-    ///////////////////////////////////////////////////////////÷
-    ///////////////////////////////////////////////////////////÷
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \Loghy\SDK\Exception\LoghyException
-     * @throws \Loghy\SDK\Exception\InvalidResponseBodyStructureException
-     */
-    public function __putUserId(string $userId, string $loghyId = null): bool
-    {
-        $loghyId = $loghyId ?? $this->user()->getLoghyId();
-        $response = $this->requestApi('lgid2set', $loghyId, $userId);
-
-        $this->verifyResponse($response, false);
-
-        $this->user = ($this->user ?? new User())->map([
-            'loghyId' => $loghyId,
-            'userId' => $userId,
-        ]);
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \Loghy\SDK\Exception\LoghyException
-     * @throws \Loghy\SDK\Exception\InvalidResponseBodyStructureException
-     */
-    public function __deleteUser(string $loghyId = null): bool
-    {
-        $loghyId = $loghyId ?? $this->user()->getLoghyId();
-        $response = $this->requestApi('lgid2del', $loghyId);
-
-        $this->verifyResponse($response, false);
-
-        $this->user = null;
-        return true;
     }
 }
