@@ -61,7 +61,7 @@ test('putUserId() can be used without Loghy ID when it has authenticated user', 
     $loghy->setHttpClient($httpClient)
         ->setSiteAccessToken('__site_access_token__')
         ->setUser(
-            (new \Loghy\SDK\User)->map(['loghyId' => '__loghy_id__'])
+            (new \Loghy\SDK\User())->map(['loghyId' => '__loghy_id__'])
         );
 
     expect($loghy->putUserId('__user_id__', null))

@@ -111,9 +111,9 @@ class Loghy implements LoghyInterface
 
     /**
      * Set the User instance for the authenticated user.
-     * 
+     *
      * @param \Loghy\SDK\User $user
-     * 
+     *
      * @return $this
      */
     public function setUser(User $user): static
@@ -125,9 +125,9 @@ class Loghy implements LoghyInterface
     /**
      * Get the user token by exchanging the authorization code.
      * @see https://api-v2-spec.sns-loghy.jp/front.html#tag/auth/operation/post-auth-token
-     * 
+     *
      * @param null|string $code
-     * 
+     *
      * @return array
      * @throws \Loghy\SDK\Exception\LoghyException
      */
@@ -150,9 +150,9 @@ class Loghy implements LoghyInterface
 
     /**
      * Set the user token.
-     * 
+     *
      * @param array $token
-     * 
+     *
      * @return $this
      */
     public function setToken(array $token): static
@@ -164,9 +164,9 @@ class Loghy implements LoghyInterface
     /**
      * Verify ID token and fetch the user profile.
      * @see https://api-v2-spec.sns-loghy.jp/front.html#tag/auth/operation/post-auth-verify
-     * 
+     *
      * @param string $idToken
-     * 
+     *
      * @return array
      * @throws \Loghy\SDK\Exception\LoghyException
      */
@@ -185,9 +185,9 @@ class Loghy implements LoghyInterface
     /**
      * Get social provider tokens.
      * @see https://api-v2-spec.sns-loghy.jp/front.html#operation/get-user-social_provider_token
-     * 
+     *
      * @param null|string $userAccessToken
-     * 
+     *
      * @return array
      * @throws \Loghy\SDK\Exception\LoghyException
      * @throws \Loghy\SDK\Exception\UnsetUserAccessTokenException
@@ -208,12 +208,12 @@ class Loghy implements LoghyInterface
 
     /**
      * Request API
-     * 
+     *
      * @param string $method
      * @param string $uri
      * @param array $json
      * @param array $headers
-     * 
+     *
      * @return array
      * @throws \Loghy\SDK\Exception\LoghyException
      */
@@ -238,9 +238,9 @@ class Loghy implements LoghyInterface
 
     /**
      * Get JSON content from HTTP response.
-     * 
+     *
      * @param \Psr\Http\Message\ResponseInterface $response
-     * 
+     *
      * @return array
      */
     private function getResponseJson(\Psr\Http\Message\ResponseInterface $response): array
@@ -253,7 +253,7 @@ class Loghy implements LoghyInterface
      * Set the authorization code.
      *
      * @param string $code
-     * 
+     *
      * @return $this
      */
     public function setCode(string $code): static
@@ -278,9 +278,9 @@ class Loghy implements LoghyInterface
 
     /**
      * Set the access token for the site required to use management(admin) API.
-     * 
+     *
      * @param string $token
-     * 
+     *
      * @return $this
      */
     public function setSiteAccessToken(string $token): static
@@ -291,7 +291,7 @@ class Loghy implements LoghyInterface
 
     /**
      * Get the access token for the site required to use management(admin) API.
-     * 
+     *
      * @return string
      * @throws \Loghy\SDK\Exception\UnsetSiteAccessTokenException
      */
@@ -306,7 +306,7 @@ class Loghy implements LoghyInterface
     /**
      * {@inheritdoc}
      * @see https://api-v2-spec.sns-loghy.jp/manage.html#tag/users/operation/put-users-bulk
-     * 
+     *
      * @throws \Loghy\SDK\Exception\LoghyException
      * @throws \Loghy\SDK\Exception\UnsetLoghyIdException
      */
@@ -340,7 +340,7 @@ class Loghy implements LoghyInterface
     /**
      * {@inheritdoc}
      * @see https://api-v2-spec.sns-loghy.jp/manage.html#tag/users/operation/delete-users-bulk
-     * 
+     *
      * @throws \Loghy\SDK\Exception\LoghyException
      * @throws \Loghy\SDK\Exception\UnsetLoghyIdException
      */
@@ -368,7 +368,7 @@ class Loghy implements LoghyInterface
 
     /**
      * Get API URI.
-     * 
+     *
      * @return string
      */
     protected function getApiUri(): string

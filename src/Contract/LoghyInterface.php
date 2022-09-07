@@ -11,7 +11,7 @@ interface LoghyInterface
 {
     /**
      * Get the User instance for the authenticated user.
-     * 
+     *
      * @param null|string $code
      *
      * @return \Loghy\SDK\Contract\User

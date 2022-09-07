@@ -22,7 +22,7 @@ test('verify() throws exception when some error occurs', function (int $status, 
     $loghy->setHttpClient($httpClient);
 
     expect(
-        fn() => $loghy->verify('__wrong_ID_token__')
+        fn () => $loghy->verify('__wrong_ID_token__')
     )->toThrow(
         \Loghy\SDK\Exception\LoghyException::class,
         $json['message']

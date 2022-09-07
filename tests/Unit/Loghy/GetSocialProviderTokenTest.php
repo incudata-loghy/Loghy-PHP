@@ -22,7 +22,7 @@ test('socialProviderTokens() throws exception when the access token is invalid',
     $loghy->setHttpClient($httpClient);
 
     expect(
-        fn() => $loghy->socialProviderTokens('__wrong_access_token__')
+        fn () => $loghy->socialProviderTokens('__wrong_access_token__')
     )->toThrow(
         \Loghy\SDK\Exception\LoghyException::class,
         $json['message']
