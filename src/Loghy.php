@@ -221,7 +221,7 @@ class Loghy implements LoghyInterface
     {
         try {
             $response = $this->httpClient()->request($method, $uri, [
-                'headers' => [...$headers, 'Accept' => 'application/json'],
+                'headers' => $headers + ['Accept' => 'application/json'],
                 'json' => $json,
             ]);
             return $this->getResponseJson($response);
