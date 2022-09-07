@@ -10,18 +10,13 @@ namespace Loghy\SDK\Contract;
 interface LoghyInterface
 {
     /**
-     * Set the authorization code.
-     *
-     * @return $this
-     */
-    public function setCode(string $code): static;
-
-    /**
      * Get the User instance for the authenticated user.
+     *
+     * @param null|string $code
      *
      * @return \Loghy\SDK\Contract\User
      */
-    public function user(): User;
+    public function user(string $code = null): User;
 
     /**
      * Set user ID by site to a Loghy ID.

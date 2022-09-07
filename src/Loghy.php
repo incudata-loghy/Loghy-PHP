@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Loghy\SDK;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\BadResponseException;
 use Loghy\SDK\Contract\LoghyInterface;
-use Loghy\SDK\Contract\User as ContractUser;
 use Loghy\SDK\Exception\InvalidResponseBodyStructureException;
 use Loghy\SDK\Exception\LoghyException;
 use Loghy\SDK\Exception\UnsetCodeException;
+use Loghy\SDK\Exception\UnsetLoghyIdException;
+use Loghy\SDK\Exception\UnsetSiteAccessTokenException;
+use Loghy\SDK\Exception\UnsetUserAccessTokenException;
 
 /**
  * Class Loghy.
@@ -19,12 +22,22 @@ class Loghy implements LoghyInterface
     /**
      * The Guzzle client instance.
      */
-    protected ?Client $client;
+    protected ?Client $client = null;
 
     /**
      * The authorization code.
      */
     protected ?string $code = null;
+
+    /**
+     * The user token issued by Loghy
+     */
+    protected ?array $userToken = null;
+
+    /**
+     * The site access token required to use management(admin) API.
+     */
+    protected ?string $siteAccessToken = null;
 
     /**
      * The cached user instance.
@@ -33,7 +46,6 @@ class Loghy implements LoghyInterface
 
 
     public function __construct(
-        private string $apiKey,
         private string $siteCode
     ) {
     }
@@ -65,6 +77,184 @@ class Loghy implements LoghyInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \Loghy\SDK\Exception\LoghyException
+     * @throws \Loghy\SDK\Exception\UnsetCodeException
+     * @throws \Loghy\SDK\Exception\InvalidResponseBodyStructureException
+     */
+    public function user(string $code = null): \Loghy\SDK\User
+    {
+        if ($this->user) {
+            return $this->user;
+        }
+        $this->user ??= new User();
+
+        $code and $this->setCode($code);
+
+        $tokenResponse = $this->token($this->getCode());
+        $idToken = $tokenResponse['id_token']
+            ?? throw new InvalidResponseBodyStructureException("auth/token response has no id_token key", $tokenResponse);
+
+        $verifyResponse = $this->verify($idToken);
+        $userRaw = $verifyResponse['user']
+            ?? throw new InvalidResponseBodyStructureException("auth/verify response has not user key", $verifyResponse);
+
+        return $this->user->map([
+            'id' => $userRaw['sub'] ?? null,
+            'type' => $userRaw['social_provider'] ?? null,
+            'loghyId' => isset($userRaw['loghy_id']) ? (string)$userRaw['loghy_id'] : null,
+            'userId' => $userRaw['user_id'] ?? null,
+            'name' => $userRaw['name'] ?? null,
+            'email' => $userRaw['email'] ?? null,
+        ])->setRaw($userRaw);
+    }
+
+    /**
+     * Set the User instance for the authenticated user.
+     *
+     * @param \Loghy\SDK\User $user
+     *
+     * @return $this
+     */
+    public function setUser(User $user): static
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    /**
+     * Get the user token by exchanging the authorization code.
+     * @see https://api-v2-spec.sns-loghy.jp/front.html#tag/auth/operation/post-auth-token
+     *
+     * @param null|string $code
+     *
+     * @return array
+     * @throws \Loghy\SDK\Exception\LoghyException
+     */
+    public function token(string $code = null): array
+    {
+        if ($this->userToken) {
+            return $this->userToken;
+        }
+        $code and $this->setCode($code);
+
+        return $this->requestApi(
+            method: 'POST',
+            uri: 'auth/token',
+            json: [
+                'site_code' => $this->siteCode,
+                'code' => $this->getCode(),
+            ],
+        );
+    }
+
+    /**
+     * Set the user token.
+     *
+     * @param array $token
+     *
+     * @return $this
+     */
+    public function setToken(array $token): static
+    {
+        $this->userToken = $token;
+        return  $this;
+    }
+
+    /**
+     * Verify ID token and fetch the user profile.
+     * @see https://api-v2-spec.sns-loghy.jp/front.html#tag/auth/operation/post-auth-verify
+     *
+     * @param string $idToken
+     *
+     * @return array
+     * @throws \Loghy\SDK\Exception\LoghyException
+     */
+    public function verify(string $idToken): array
+    {
+        return $this->requestApi(
+            method: 'POST',
+            uri: 'auth/verify',
+            json: [
+                'id_token' => $idToken,
+                'site_code' => $this->siteCode,
+            ],
+        );
+    }
+
+    /**
+     * Get social provider tokens.
+     * @see https://api-v2-spec.sns-loghy.jp/front.html#operation/get-user-social_provider_token
+     *
+     * @param null|string $userAccessToken
+     *
+     * @return array
+     * @throws \Loghy\SDK\Exception\LoghyException
+     * @throws \Loghy\SDK\Exception\UnsetUserAccessTokenException
+     */
+    public function socialProviderTokens(string $userAccessToken = null): array
+    {
+        $userAccessToken ??= $this->userToken['userAccessToken'] ?? throw new UnsetUserAccessTokenException(
+            'The access token has not been set. ' .
+                'Please call socialProviderToken() method with the access token as an argument.'
+        );
+
+        return $this->requestApi(
+            method: 'GET',
+            uri: 'user/social_provider_token',
+            headers: ['Authorization' => 'Bearer ' . $userAccessToken],
+        );
+    }
+
+    /**
+     * Request API
+     *
+     * @param string $method
+     * @param string $uri
+     * @param array $json
+     * @param array $headers
+     *
+     * @return array
+     * @throws \Loghy\SDK\Exception\LoghyException
+     */
+    private function requestApi(string $method, string $uri, array $json = [], array $headers = []): array
+    {
+        try {
+            $response = $this->httpClient()->request($method, $uri, [
+                'headers' => $headers + ['Accept' => 'application/json'],
+                'json' => $json,
+            ]);
+            return $this->getResponseJson($response);
+        } catch (BadResponseException $e) {
+            throw new LoghyException(
+                $this->getResponseJson($e->getResponse())['message'] ?? '',
+                $e->getResponse()->getStatusCode(),
+                $e
+            );
+        } catch (\Exception $e) {
+            throw new LoghyException(previous: $e);
+        }
+    }
+
+    /**
+     * Get JSON content from HTTP response.
+     *
+     * @param \Psr\Http\Message\ResponseInterface $response
+     *
+     * @return array
+     */
+    private function getResponseJson(\Psr\Http\Message\ResponseInterface $response): array
+    {
+        $body = (string) $response->getBody();
+        return json_decode($body, true);
+    }
+
+    /**
+     * Set the authorization code.
+     *
+     * @param string $code
+     *
+     * @return $this
      */
     public function setCode(string $code): static
     {
@@ -81,201 +271,108 @@ class Loghy implements LoghyInterface
     public function getCode(): string
     {
         return $this->code ?? throw new UnsetCodeException(
-            'The authentication code has not been set. ' .
-            'Please call the setCode() method to set up.'
+            'The authorization code has not been set. ' .
+                'Please call the setCode() method to set up.'
+        );
+    }
+
+    /**
+     * Set the access token for the site required to use management(admin) API.
+     *
+     * @param string $token
+     *
+     * @return $this
+     */
+    public function setSiteAccessToken(string $token): static
+    {
+        $this->siteAccessToken = $token;
+        return $this;
+    }
+
+    /**
+     * Get the access token for the site required to use management(admin) API.
+     *
+     * @return string
+     * @throws \Loghy\SDK\Exception\UnsetSiteAccessTokenException
+     */
+    public function getSiteAccessToken(): string
+    {
+        return $this->siteAccessToken ?? throw new UnsetSiteAccessTokenException(
+            'The site access token has not been set. ' .
+                'Please call the setSiteAccessToken() method to set up.'
         );
     }
 
     /**
      * {@inheritdoc}
+     * @see https://api-v2-spec.sns-loghy.jp/manage.html#tag/users/operation/put-users-bulk
      *
      * @throws \Loghy\SDK\Exception\LoghyException
-     * @throws \Loghy\SDK\Exception\UnsetCodeException
-     * @throws \Loghy\SDK\Exception\InvalidResponseBodyStructureException
+     * @throws \Loghy\SDK\Exception\UnsetLoghyIdException
      */
-    public function user(): ContractUser
+    public function putUserId(string $userId, ?string $loghyId = null): bool
     {
-        if ($this->user) {
-            return $this->user;
-        }
-        $this->user ??= new User();
-
-        $data = $this->getLoghyId($this->getCode());
-        $this->user->map([
-            'type' => $data['social_login'] ?? null,
-            'loghyId' => isset($data['lgid']) ? (string)$data['lgid'] : null,
-            'userId' => $data['site_id'] ?? null,
-        ]);
-
-        $userInfo = $this->getUserInfo($this->user->getLoghyId());
-        $this->user->map([
-            'id' => $userInfo['sid'] ?? null,
-            'name' => $userInfo['name'] ?? null,
-            'email' => $userInfo['email'] ?? null,
-        ])->setRaw($userInfo);
-
-        return $this->user;
-    }
-
-    /**
-     * Get Loghy ID response from a authentication code.
-     *
-     * @param string $code
-     * @return array
-     *
-     * @throws \Loghy\SDK\Exception\LoghyException
-     * @throws \Loghy\SDK\Exception\InvalidResponseBodyStructureException
-     */
-    protected function getLoghyId(
-        string $code
-    ): array {
-        $data = [ 'code' => $code ];
-        $response = $this->httpClient()->request('POST', 'loghyid', [
-            'form_params' => $data
-        ]);
-
-        $body = (string) $response->getBody();
-        $content = json_decode($body, true);
-
-        return $this->verifyResponse($content);
-    }
-
-    /**
-     * Get user information from a Loghy ID
-     *
-     * @param string $loghyId
-     * @return array<string,array|bool|int|string>
-     *
-     * @throws \Loghy\SDK\Exception\LoghyException
-     * @throws \Loghy\SDK\Exception\InvalidResponseBodyStructureException
-     */
-    protected function getUserInfo(
-        string $loghyId
-    ): array {
-        $response = $this->requestApi('lgid2get', $loghyId);
-        $data = $this->verifyResponse($response);
-
-        return $data['personal_data'] ?? throw new InvalidResponseBodyStructureException(
-            'Data key value has no personal_data key.',
-            $response ?? []
+        $loghyId ??= $this->user?->getLoghyId() ?? throw new UnsetLoghyIdException(
+            'Loghy ID has not been set. ' .
+                'Please call putUserId() method with Loghy ID as an argument.'
         );
+
+        $response = $this->requestApi(
+            method: 'PUT',
+            uri: 'manage/users/bulk',
+            headers: [
+                'Authorization' => 'Bearer ' . $this->getSiteAccessToken()
+            ],
+            json: [
+                'users' => [
+                    [
+                        'loghy_id' => $loghyId,
+                        'settings' => [
+                            'user_id' => $userId
+                        ]
+                    ]
+                ]
+            ],
+        );
+        return $response['message'] === 'ok';
     }
 
     /**
      * {@inheritdoc}
+     * @see https://api-v2-spec.sns-loghy.jp/manage.html#tag/users/operation/delete-users-bulk
      *
      * @throws \Loghy\SDK\Exception\LoghyException
-     * @throws \Loghy\SDK\Exception\InvalidResponseBodyStructureException
+     * @throws \Loghy\SDK\Exception\UnsetLoghyIdException
      */
-    public function putUserId(string $userId, string $loghyId = null): bool
+    public function deleteUser(?string $loghyId = null): bool
     {
-        $loghyId = $loghyId ?? $this->user()->getLoghyId();
-        $response = $this->requestApi('lgid2set', $loghyId, $userId);
-
-        $this->verifyResponse($response, false);
-
-        $this->user = ($this->user ?? new User())->map([
-            'loghyId' => $loghyId,
-            'userId' => $userId,
-        ]);
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \Loghy\SDK\Exception\LoghyException
-     * @throws \Loghy\SDK\Exception\InvalidResponseBodyStructureException
-     */
-    public function deleteUser(string $loghyId = null): bool
-    {
-        $loghyId = $loghyId ?? $this->user()->getLoghyId();
-        $response = $this->requestApi('lgid2del', $loghyId);
-
-        $this->verifyResponse($response, false);
-
-        $this->user = null;
-        return true;
-    }
-
-    /**
-     * @param array $response
-     * @param bool $hasData
-     * @return array|bool
-     *
-     * @throws \Loghy\SDK\Exception\LoghyException
-     * @throws \Loghy\SDK\Exception\InvalidResponseBodyStructureException
-     */
-    private function verifyResponse(array $response, bool $hasData = true): array|bool
-    {
-        if (!isset($response['result'])) {
-            throw new InvalidResponseBodyStructureException('The response json has no result key.', $response);
-        }
-        if (!is_bool($response['result'])) {
-            throw new InvalidResponseBodyStructureException('Result key value is not bool.', $response);
-        }
-        if ($hasData) {
-            if (!isset($response['data'])) {
-                throw new InvalidResponseBodyStructureException('The response json has no data key.', $response);
-            }
-            if (!is_array($response['data'])) {
-                throw new InvalidResponseBodyStructureException('Data key value is not array.', $response);
-            }
-        }
-
-        if ($response['result']) {
-            if ($hasData) {
-                return $response['data'];
-            }
-            return true;
-        }
-
-        throw new LoghyException(
-            $response['error_message'] ?? '',
-            $response['error_code'] ?? 0
+        $loghyId ??= $this->user?->getLoghyId() ?? throw new UnsetLoghyIdException(
+            'Loghy ID has not been set. ' .
+                'Please call deleteUser() method with Loghy ID as an argument.'
         );
+
+        $response = $this->requestApi(
+            method: 'DELETE',
+            uri: 'manage/users/bulk',
+            headers: [
+                'Authorization' => 'Bearer ' . $this->getSiteAccessToken()
+            ],
+            json: [
+                'loghy_ids' => [
+                    $loghyId,
+                ],
+            ],
+        );
+        return $response['message'] === 'ok';
     }
 
+    /**
+     * Get API URI.
+     *
+     * @return string
+     */
     protected function getApiUri(): string
     {
-        return 'https://api001.sns-loghy.jp/api/';
-    }
-
-    /**
-     * Request API
-     *
-     * @param string $command
-     * @param string $id
-     * @param string $mid
-     * @return array|null
-     */
-    private function requestApi(
-        string $command,
-        string $id,
-        string $mid = ''
-    ): ?array {
-        $atype = 'site';
-        $time = time();
-        $skey = hash(
-            'sha256',
-            $command . $atype . $this->siteCode . $id . $mid . $time . $this->apiKey
-        );
-        $data = [
-            'cmd' => $command,
-            'atype' => $atype,
-            'sid' => $this->siteCode,
-            'id' => $id,
-            'mid' => $mid,
-            'time' => $time,
-            'skey' => $skey,
-        ];
-
-        $response = $this->httpClient()->request('GET', $command, [
-            'query' => $data
-        ]);
-
-        $body = (string) $response->getBody();
-        $content = json_decode($body, true);
-        return $content;
+        return 'https://api001.sns-loghy.jp/api/v2/';
     }
 }

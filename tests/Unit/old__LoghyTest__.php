@@ -33,7 +33,7 @@ test('getCode() returns the code that was provided at setCode()', function () {
 test('getCode() throws exception when the code has not been set', function () {
     $loghy = new Loghy\SDK\Loghy(...$this->configuration);
     $loghy->getCode();
-})->throws(UnsetCodeException::class, 'The authentication code has not been set. Please call the setCode() method to set up.');
+})->throws(UnsetCodeException::class, 'The authorization code has not been set. Please call the setCode() method to set up.');
 
 test('user() throws exception with invalid code', function (array $response) {
     $loghy = new Loghy\SDK\Loghy(...$this->configuration);
@@ -122,7 +122,7 @@ test('deleteUser() throws exception with NG response', function (array $response
     $loghy->deleteUser('__loghy_id__');
 })->with('ng_response')->throws(LoghyException::class);
 
-function makeGuzzleJsonMockClient(
+function _makeGuzzleJsonMockClient(
     array ...$data
 ): GuzzleHttp\Client {
     $mock = new GuzzleHttp\Handler\MockHandler(

@@ -11,27 +11,22 @@ parameters:
 			path: src/Exception/InvalidResponseBodyStructureException.php
 
 		-
-			message: "#^Property Loghy\\\\SDK\\\\Exception\\\\InvalidResponseBodyStructureException\\:\\:\\$response type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/Exception/InvalidResponseBodyStructureException.php
-
-		-
-			message: "#^Cannot access offset 'personal_data' on array\\|bool\\.$#"
+			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:getResponseJson\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Loghy.php
 
 		-
-			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:getLoghyId\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:getResponseJson\\(\\) should return array but returns mixed\\.$#"
 			count: 1
 			path: src/Loghy.php
 
 		-
-			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:getLoghyId\\(\\) should return array but returns array\\|bool\\.$#"
+			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:requestApi\\(\\) has parameter \\$headers with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Loghy.php
 
 		-
-			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:getUserInfo\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:requestApi\\(\\) has parameter \\$json with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Loghy.php
 
@@ -41,27 +36,27 @@ parameters:
 			path: src/Loghy.php
 
 		-
-			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:requestApi\\(\\) should return array\\|null but returns mixed\\.$#"
+			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:setToken\\(\\) has parameter \\$token with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Loghy.php
 
 		-
-			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:verifyResponse\\(\\) has parameter \\$response with no value type specified in iterable type array\\.$#"
+			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:socialProviderTokens\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Loghy.php
 
 		-
-			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:verifyResponse\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:token\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Loghy.php
 
 		-
-			message: "#^Parameter \\#1 \\$response of method Loghy\\\\SDK\\\\Loghy\\:\\:verifyResponse\\(\\) expects array, array\\|null given\\.$#"
-			count: 3
+			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:verify\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
 			path: src/Loghy.php
 
 		-
-			message: "#^Parameter \\#1 \\$response of method Loghy\\\\SDK\\\\Loghy\\:\\:verifyResponse\\(\\) expects array, mixed given\\.$#"
+			message: "#^Property Loghy\\\\SDK\\\\Loghy\\:\\:\\$userToken type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Loghy.php
 
