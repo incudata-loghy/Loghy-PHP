@@ -2,10 +2,10 @@
 
 /**
  * Make JSON response.
- * 
+ *
  * @param array $json
  * @param int $status
- * 
+ *
  * @return \GuzzleHttp\Psr7\Response
  */
 function makeJsonResponse(array $json = [], int $status = 200): \GuzzleHttp\Psr7\Response
@@ -19,7 +19,7 @@ function makeJsonResponse(array $json = [], int $status = 200): \GuzzleHttp\Psr7
 
 /**
  * Make mock HTTP client.
- * 
+ *
  * @param \GuzzleHttp\Psr7\Response[] $responses
  */
 function makeMockHttpClient(

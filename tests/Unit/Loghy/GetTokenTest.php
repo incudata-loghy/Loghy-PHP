@@ -22,7 +22,7 @@ test('token() throws exception when code is invalid', function (int $status, arr
     $loghy->setHttpClient($httpClient);
 
     expect(
-        fn() => $loghy->token('__wrong_code__')
+        fn () => $loghy->token('__wrong_code__')
     )->toThrow(
         \Loghy\SDK\Exception\LoghyException::class,
         $json['message']

@@ -7,14 +7,14 @@ dataset('response.front.user.social_provider_token.ok', [
             [
                 'provider' => 'apple',
                 'token' => '...',
-                'token_secret' => NULL,
+                'token_secret' => null,
                 'refresh_token' => '...',
                 'expires_in' => 3600,
             ],
             [
                 'provider' => 'line',
                 'token' => '...',
-                'token_secret' => NULL,
+                'token_secret' => null,
                 'refresh_token' => '...',
                 'expires_in' => 3600,
             ],
