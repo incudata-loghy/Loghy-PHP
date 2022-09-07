@@ -14,7 +14,7 @@ $ composer require incudata-loghy/loghy-php
 <?php
 use Loghy\SDK\Loghy;
 
-$loghy = new Loghy('{YOUR_API_KEY}', '{YOUR_SITE_CODE}');
+$loghy = new Loghy('{YOUR_SITE_CODE}');
 ```
 
 ### Get authenticated user from authorization code
@@ -22,9 +22,15 @@ $loghy = new Loghy('{YOUR_API_KEY}', '{YOUR_SITE_CODE}');
 ```php
 <?php
 
-$user = $loghy->setCode($code)->user();
+$user = $loghy->user($code);
 
 $loghyId = $user->getLoghyId();
 $name    = $user->getName();
 $email   = $user->getEmail();
+```
+
+### Set the user ID issued by your sites to Loghy ID
+
+```php
+$loghy->putUserId('{YOUR_USER_ID}', '{YOUR_LOGHY_ID}');
 ```
