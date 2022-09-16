@@ -30,8 +30,8 @@ interface LoghyInterface
     /**
      * Delete user (Loghy ID).
      *
-     * @param string|null $loghyId
+     * @param string|array|null $loghyId
      * @return bool
      */
-    public function deleteUser(string $loghyId = null): bool;
+    public function deleteUser(string|array $loghyId = null): bool;
 }
