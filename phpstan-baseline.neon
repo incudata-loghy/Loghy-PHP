@@ -1,6 +1,11 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Method Loghy\\\\SDK\\\\Contract\\\\LoghyInterface\\:\\:deleteUser\\(\\) has parameter \\$loghyId with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Contract/LoghyInterface.php
+
+		-
 			message: "#^Method Loghy\\\\SDK\\\\Exception\\\\InvalidResponseBodyStructureException\\:\\:__construct\\(\\) has parameter \\$response with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Exception/InvalidResponseBodyStructureException.php
@@ -9,6 +14,11 @@ parameters:
 			message: "#^Method Loghy\\\\SDK\\\\Exception\\\\InvalidResponseBodyStructureException\\:\\:getResponse\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Exception/InvalidResponseBodyStructureException.php
+
+		-
+			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:deleteUser\\(\\) has parameter \\$loghyId with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Loghy.php
 
 		-
 			message: "#^Method Loghy\\\\SDK\\\\Loghy\\:\\:getResponseJson\\(\\) return type has no value type specified in iterable type array\\.$#"
