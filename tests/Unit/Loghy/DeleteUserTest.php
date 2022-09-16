@@ -15,6 +15,19 @@ test('deleteUser() deletes user', function (array $json) {
         ->toBe(true);
 })->with('response.manage.user.bulk.delete.ok');
 
+test('deleteUser() can delete multiple users', function (array $json) {
+    $loghy = new \Loghy\SDK\Loghy('__site_code__');
+
+    $httpClient = makeMockHttpClient(
+        makeJsonResponse($json, 200)
+    );
+    $loghy->setHttpClient($httpClient)
+        ->setSiteAccessToken('__site_access_token__');
+
+    expect($loghy->deleteUser(['__loghy_id_1__', '__loghy_id_2__']))
+        ->toBe(true);
+})->with('response.manage.user.bulk.delete.ok');
+
 test('deleteUser() throws exception when some error occurs', function (int $status, array $json) {
     $loghy = new \Loghy\SDK\Loghy('__site_code__');
 

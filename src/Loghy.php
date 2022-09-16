@@ -344,7 +344,7 @@ class Loghy implements LoghyInterface
      * @throws \Loghy\SDK\Exception\LoghyException
      * @throws \Loghy\SDK\Exception\UnsetLoghyIdException
      */
-    public function deleteUser(?string $loghyId = null): bool
+    public function deleteUser(string|array $loghyId = null): bool
     {
         $loghyId ??= $this->user?->getLoghyId() ?? throw new UnsetLoghyIdException(
             'Loghy ID has not been set. ' .
@@ -358,9 +358,7 @@ class Loghy implements LoghyInterface
                 'Authorization' => 'Bearer ' . $this->getSiteAccessToken()
             ],
             json: [
-                'loghy_ids' => [
-                    $loghyId,
-                ],
+                'loghy_ids' => (array)$loghyId,
             ],
         );
         return $response['message'] === 'ok';
